@@ -1,5 +1,5 @@
 ---
-title: "VAMS API Keys: Find, Use, and Secure Your Key"
+title: "VAMS API Keys: How to Find, Use, and Secure Your Key"
 sidebarTitle: "API Keys"
 description: "Find your VAMS API key, attach it to requests using the X-API-Key header, and follow best practices for keeping your key safe in production."
 ---
@@ -104,5 +104,5 @@ Follow these practices to keep your key safe:
 
 - **Use a server-side proxy.** In production, route API requests through your own backend server. Your server holds the key and forwards requests to VAMS — the key is never exposed to browsers.
 - **Use environment variables.** Set `VAMS_API_KEY` in your deployment environment rather than committing the key to your repository.
-- **Restrict CORS on your VAMS instance.** Update `config/cors.php` to allow only your trusted domains, so even if a key leaks it cannot be used from arbitrary origins.
+- **Restrict CORS on your VAMS instance.** Configure your VAMS instance to allow only your trusted domains in its CORS settings, so even if a key leaks it cannot be used from arbitrary origins.
 - **Treat your key like a password.** If you suspect your key has been compromised, contact support or regenerate it immediately from your profile settings.

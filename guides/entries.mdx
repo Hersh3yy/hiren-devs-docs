@@ -18,17 +18,17 @@ Entries also support **draft** and **published** statuses, so you can work on co
 
 ## Browsing and Filtering Entries
 
-Entries are always viewed within the context of an entry type. From the **Entries** section of the dashboard, select the entry type you want to work with (for example, `?type=artist-statement`). You'll see all entries of that type listed in their current order.
+Entries are always viewed within the context of an entry type. From the **Entries** section of the dashboard, select the entry type you want to work with. You'll see all entries of that type listed in their current order.
 
 ## Creating an Entry
 
 <Steps>
   <Step title="Navigate to the correct entry type">
-    From the **Entries** page, make sure you've selected the right entry type from the filter or URL parameter. The form fields shown during creation are determined by this type.
+    From the **Entries** page, make sure you've selected the right entry type from the filter or navigation. The form fields shown during creation are determined by this type.
   </Step>
 
   <Step title="Click 'Create Entry'">
-    Click the **Create Entry** button. You'll be taken to the entry creation form, which is built dynamically from the entry type's field configuration.
+    Click the **Create Entry** button. You'll be taken to the entry creation form, which is built from the entry type's field configuration.
   </Step>
 
   <Step title="Fill in the Title">
@@ -80,6 +80,30 @@ The fields you see on an entry form depend on which field types the entry type u
   A true/false toggle. Use this for binary flags or yes/no attributes.
 
   **Example use cases:** Featured project, available for commission, includes print rights
+</Accordion>
+
+<Accordion title="Repeatable sections">
+  A field that lets you add multiple instances of a grouped set of sub-fields. For example, a case study entry type might have a repeatable "Project Sections" field, where each section has its own title and body text. You can add, remove, and reorder sections as needed.
+
+  **Example use cases:** Project sections, timeline events, team members, testimonials
+</Accordion>
+
+<Accordion title="Image collection">
+  A field for uploading and managing a set of images within an entry. Each image can have its own alt text and caption. Images within the collection can be reordered by drag and drop.
+
+  **Example use cases:** Project process photos, case study visuals, portfolio shots within a written piece
+</Accordion>
+
+<Accordion title="Related entries">
+  A field that links to other entries of a specified type. Useful for surfacing related work, similar projects, or linked content in your API responses.
+
+  **Example use cases:** Related case studies, similar projects, series entries
+</Accordion>
+
+<Accordion title="Object / Group">
+  A grouped set of sub-fields treated as a single structured value. Often used for optional metadata sections that can be collapsed when not in use.
+
+  **Example use cases:** SEO settings (meta title, meta description), contact details, social links
 </Accordion>
 
 ## Publishing and Draft Status

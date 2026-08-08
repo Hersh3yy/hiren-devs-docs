@@ -1,7 +1,7 @@
 ---
-title: "Quickstart: Make Your First VAMS API Call"
+title: "Quickstart: Make Your First VAMS API Call in Minutes"
 sidebarTitle: "Quickstart"
-description: "Log in, create an album, upload an image, grab your API key, and fetch your content via the API — all in under ten minutes."
+description: "Log in, create an album, upload an image, grab your API key, and make your first live API call — get up and running in under ten minutes."
 ---
 
 This guide walks you through the fastest path from a new VAMS account to live content served over the API. By the end you will have a published album with at least one image and a working API call returning your data in JSON.
@@ -49,7 +49,7 @@ This guide walks you through the fastest path from a new VAMS account to live co
 
     <CodeGroup>
       ```js JavaScript
-      fetch('/api/albums', {
+      fetch('https://your-vams-domain.com/api/albums', {
         headers: {
           'X-API-Key': 'your-api-key'
         }
@@ -64,42 +64,44 @@ This guide walks you through the fastest path from a new VAMS account to live co
       ```
     </CodeGroup>
 
-    A successful response returns a JSON array of your published albums:
+    A successful response looks like this:
 
     ```json Example response
     {
-      "data": [
-        {
-          "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-          "title": "Summer Collection",
-          "description": "A selection of outdoor work from July.",
-          "published": true,
-          "images": [
-            {
-              "id": "f0e1d2c3-b4a5-6789-0fed-cba987654321",
-              "title": "Golden Hour",
-              "url": "https://assets.example.com/images/golden-hour.jpg",
-              "order": 1
-            }
-          ],
-          "created_at": "2025-01-15T10:30:00Z",
-          "updated_at": "2025-01-20T14:45:00Z"
-        }
-      ]
+      "success": true,
+      "message": "Albums retrieved successfully",
+      "data": {
+        "albums": [
+          {
+            "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "title": "Summer Collection",
+            "description": "A selection of outdoor work from July.",
+            "cover_image_path": "https://assets.example.com/images/cover.jpg",
+            "images_count": 12,
+            "published": true,
+            "created_at": "2025-01-15T10:30:00.000Z",
+            "updated_at": "2025-01-20T14:45:00.000Z"
+          }
+        ]
+      }
     }
     ```
 
-    You can also verify your API key is valid at any time using the test endpoint:
+    <Tip>
+      To include each album's full image list in a single request, append `?with_images=true` to the URL: `GET /api/albums?with_images=true`.
+    </Tip>
+
+    You can also verify your API key is valid at any time using the `GET /api/test` endpoint:
 
     ```js Test your connection
-    fetch('/api/test', {
+    fetch('https://your-vams-domain.com/api/test', {
       headers: {
         'X-API-Key': 'your-api-key'
       }
     })
       .then(response => response.json())
       .then(data => console.log(data));
-    // { "message": "API key authentication successful", "user": "Your Name", ... }
+    // { "message": "API key authentication successful", "user": "Your Name", "timestamp": "..." }
     ```
   </Step>
 </Steps>

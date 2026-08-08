@@ -1,5 +1,5 @@
 ---
-title: "Introduction to VAMS: Visual Asset Management"
+title: "Introduction to VAMS: Visual Asset Management System"
 sidebarTitle: "Introduction"
 description: "Discover what VAMS is, who it's designed for, and how its API-first architecture puts your visual content to work on any platform."
 ---
@@ -18,23 +18,23 @@ VAMS is built for visual creators who want full control over how their work is s
 ## Key capabilities
 
 <CardGroup cols={2}>
-  <Card title="Album Management" icon="folder-open">
+  <Card title="Album Management" icon="folder-open" href="/guides/albums">
     Create named collections of images with rich metadata. Control publish state so only the content you're ready to share appears in API responses.
   </Card>
-  <Card title="Mosaic Builder" icon="table-cells-large">
-    Design visual grid layouts by composing albums into tiles. Maintain separate configurations for desktop and mobile — no code required.
+  <Card title="Mosaic Builder" icon="table-cells-large" href="/guides/mosaics">
+    Design multi-column visual grids by arranging albums into tiles. Control the number of columns and the order of items within each column — no code required.
   </Card>
-  <Card title="Entries & Entry Types" icon="list">
+  <Card title="Entries & Entry Types" icon="list" href="/guides/entries">
     Define flexible content schemas (like artist statements, case studies, or project notes) and create individual records against those schemas.
   </Card>
-  <Card title="API-First Delivery" icon="plug">
+  <Card title="API-First Delivery" icon="plug" href="/guides/api-overview">
     Every piece of content you manage is accessible via a clean read-only API authenticated with your personal API key. Embed your content anywhere.
   </Card>
 </CardGroup>
 
 ## API-first architecture
 
-VAMS is built around a clear separation of concerns. The admin interface — where you create, update, and delete content — is for your eyes only, protected by session-based authentication. Your external website, portfolio, or app accesses content through a completely separate set of read-only API endpoints, authenticated via an `X-API-Key` header.
+VAMS is built around a clear separation of concerns. The dashboard — where you create, update, and delete content — is for your eyes only, protected by your account login. Your external website, portfolio, or app accesses content through a completely separate set of read-only API endpoints, authenticated via an `X-API-Key` header.
 
 This means your frontend never needs write access to your CMS. You can embed your VAMS content in an existing website, a React app, a mobile app, or any other client without exposing any management capabilities. The API is rate-limited and scoped to your account, so every response you receive contains only your content.
 
@@ -48,7 +48,7 @@ This means your frontend never needs write access to your CMS. You can embed you
 |---|---|
 | **Album** | A named, publishable collection of images with metadata |
 | **Album Image** | An individual image (or video) within an album, with ordering support |
-| **Mosaic** | A grid layout composed of album tiles, with desktop and mobile variants |
+| **Mosaic** | A multi-column grid layout composed of album tiles, with configurable column count |
 | **Entry Type** | A custom content schema defined by an admin (e.g. "Artist Statement") |
 | **Entry** | A single record conforming to an Entry Type |
 | **API Key** | Your credential for authenticating external read requests |

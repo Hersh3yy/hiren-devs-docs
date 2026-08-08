@@ -50,7 +50,7 @@ All API endpoints are rate-limited to **60 requests per minute**. If you exceed 
   <Card title="Entries" icon="list" href="/api/entries">
     Access typed content entries such as statements, recipes, or any custom type assigned to your account.
   </Card>
-  <Card title="Test connection" icon="plug" href="/api/albums">
+  <Card title="Test connection" icon="plug" href="/guides/api-key">
     Use `GET /api/test` to verify your API key is working before building your integration.
   </Card>
 </CardGroup>
@@ -115,6 +115,7 @@ A successful response has the shape:
         "description": "Outdoor portraits from July.",
         "cover_image_path": "https://assets.example.com/cover.jpg",
         "images_count": 24,
+        "user_id": "uuid",
         "published": true,
         "created_at": "2024-06-01T10:00:00.000000Z",
         "updated_at": "2024-07-15T08:30:00.000000Z"

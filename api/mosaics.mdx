@@ -1,7 +1,7 @@
 ---
-title: "Mosaics API — List and Retrieve Grid Layouts"
+title: "VAMS Mosaics API — Retrieve Grid Layouts and Items"
 sidebarTitle: "Mosaics"
-description: "Fetch your mosaic grid layouts and their positioned content items using three read-only endpoints scoped to your API key."
+description: "Fetch your mosaic grid layouts and their positioned content items using three read-only endpoints — list all, get by UUID, and look up by title."
 ---
 
 Mosaics are column-based grid layouts that you build in the VAMS drag-and-drop editor. Each mosaic contains an ordered collection of items placed across one or more columns. An item can be an image, a linked tile, or any other content type you configure — the `type` field identifies it, and the `content` object holds the payload. The Mosaics API exposes three read-only endpoints: list all mosaics, fetch one by UUID (with its items), and look up one by title.

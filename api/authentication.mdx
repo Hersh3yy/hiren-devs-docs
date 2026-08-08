@@ -1,7 +1,7 @@
 ---
-title: "VAMS API Authentication — API Key Setup Guide"
+title: "VAMS API Authentication — Keys, Headers, and Testing"
 sidebarTitle: "Authentication"
-description: "Authenticate every VAMS API request with your personal API key passed in the X-API-Key request header."
+description: "Learn how to authenticate every VAMS API request using your personal API key in the X-API-Key header, and verify connectivity with the test endpoint."
 ---
 
 The VAMS API uses **API key authentication**. Every request must include your personal API key in the `X-API-Key` HTTP header. There are no sessions, cookies, or OAuth tokens involved — the header is the only credential the API checks. All responses are scoped to the account that owns the key, so you can safely embed it in server-side code without exposing other users' data.
@@ -55,7 +55,8 @@ const response = await fetch('https://<your-vams-domain>/api/test', {
 });
 
 const data = await response.json();
-// { message: 'API key authentication successful', user: 'Jane Doe', timestamp: '...' }
+console.log(data.user);      // your account name
+console.log(data.timestamp); // current server time
 ```
 
 ```bash curl
@@ -64,6 +65,20 @@ curl https://<your-vams-domain>/api/test \
 ```
 
 </CodeGroup>
+
+**Example response:**
+
+```json
+{
+  "message": "API key authentication successful",
+  "user": "Jane Doe",
+  "timestamp": "2024-09-15T10:30:00.000Z"
+}
+```
+
+<Note>
+  The `/api/test` response is not wrapped in the standard `success`/`data` envelope used by the other endpoints — it returns `message`, `user`, and `timestamp` at the top level.
+</Note>
 
 ## Authentication Errors
 
@@ -82,7 +97,7 @@ When the `X-API-Key` header is missing or contains an invalid key, the API retur
 
 ## Rate Limiting
 
-Every API key is limited to **60 requests per minute** (`throttle:60,1`). Once you exceed that limit the API returns `429 Too Many Requests` and stops processing further requests until the current one-minute window expires.
+Every API key is limited to **60 requests per minute**. Once you exceed that limit the API returns `429 Too Many Requests` and stops processing further requests until the current one-minute window expires.
 
 ```json
 {

@@ -1,7 +1,7 @@
 ---
-title: "Albums API — List and Retrieve Photo Collections"
+title: "VAMS Albums API — Retrieve Published Photo Collections"
 sidebarTitle: "Albums"
-description: "Fetch your published photo albums and their images using three read-only endpoints scoped to your API key account."
+description: "Fetch your published photo albums and their full image payloads using three read-only endpoints, with optional inline image loading via a query parameter."
 ---
 
 Albums are the primary content unit in VAMS — each album is an ordered collection of published images with metadata. The Albums API exposes three read-only endpoints that let you list all of your published albums, retrieve a single album by its UUID, or look up an album by its title. The API never returns unpublished albums or unpublished images within an album.
@@ -98,7 +98,7 @@ GET /api/albums
               Will always be `true` for images returned by this endpoint.
             </ResponseField>
             <ResponseField name="properties" type="object">
-              Arbitrary extra metadata stored with the image (e.g. `thumbnail_url`, `webp_url`, `location`, `tags`, `author`).
+              Arbitrary extra metadata stored with the image. Common keys include `location`, `tags`, and `author`. Note that `thumbnail_url` and `webp_url` are sourced from this object and also surfaced as top-level fields for convenience.
             </ResponseField>
             <ResponseField name="created_at" type="string">
               ISO 8601 creation timestamp.
@@ -279,7 +279,7 @@ GET /api/albums/by-title/{title}
 ### Path Parameters
 
 <ParamField path="title" type="string" required>
-  The title of the album. URL-encode spaces and special characters (e.g. `Live%20Music%202024`). Laravel also accepts space characters that the router URL-decodes automatically.
+  The title of the album. URL-encode spaces and special characters (e.g. `Live%20Music%202024`). The server URL-decodes the path segment automatically, so both encoded and unencoded titles are accepted.
 </ParamField>
 
 ### Examples

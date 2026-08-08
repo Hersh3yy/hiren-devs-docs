@@ -1,5 +1,5 @@
 ---
-title: "Themes and Appearance Settings in VAMS"
+title: "Themes and Appearance Settings in the VAMS Admin"
 sidebarTitle: "Themes"
 description: "Switch between dark and light mode in the VAMS admin interface, and learn how your brand colors flow through to API-powered frontends."
 ---
@@ -15,10 +15,10 @@ VAMS gives you control over appearance at two distinct levels: the look of the *
 The VAMS admin interface has full support for both dark and light modes. You can switch between them at any time — the change is instant and applies across every page of the admin.
 
 <CardGroup cols={2}>
-  <Card title="Dark Mode" icon="moon">
+  <Card title="Dark Mode" icon="moon" href="/guides/themes">
     A dark-background interface that reduces eye strain in low-light environments and is the preferred choice for most creatives working long sessions.
   </Card>
-  <Card title="Light Mode" icon="sun">
+  <Card title="Light Mode" icon="sun" href="/guides/themes">
     A bright, high-contrast interface that works well in well-lit environments and matches standard web conventions.
   </Card>
 </CardGroup>
@@ -29,10 +29,10 @@ VAMS automatically detects your operating system's appearance preference on firs
 
 ## Brand Colors and API-Powered Frontends
 
-Beyond the admin interface, VAMS lets you define a **main color** and a **secondary color** that are embedded directly in your API responses. These colors are part of your [Display Settings](/guides/display-settings) and are designed to flow through to any external frontend you build on top of the VAMS API — your portfolio site, a client gallery, or any headless integration.
+Beyond the admin interface, VAMS embeds a **main color** and a **secondary color** directly in your API responses. These colors are part of your [Display Settings](/guides/display-settings) and are designed to flow through to any external frontend you build on top of the VAMS API — your portfolio site, a client gallery, or any headless integration.
 
-Because the colors are delivered alongside your content in the API response, your frontend can read them dynamically and apply them as CSS variables, inline styles, or theme tokens — no hard-coding required.
+Because the colors are delivered alongside your content in the API response, your frontend can read them dynamically and apply them as CSS variables, theme tokens, or any other styling approach — no hard-coding required.
 
 <Tip>
-  If you want to update the brand colors your external frontend uses, head to [Display Settings](/guides/display-settings) and change your **Main Color** or **Secondary Color** values there. Updates take effect on the next API call.
+  To update the brand colors your external frontend uses, head to [Display Settings](/guides/display-settings) and review your **Main Color** or **Secondary Color** values there.
 </Tip>

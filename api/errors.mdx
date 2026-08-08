@@ -1,7 +1,7 @@
 ---
-title: "VAMS API Error Reference — HTTP Status Codes"
+title: "VAMS API Error Codes — HTTP Statuses and Envelopes"
 sidebarTitle: "Errors"
-description: "Understand every HTTP status code the VAMS API can return and how to parse the error envelope in your client code."
+description: "A complete reference for every HTTP status code the VAMS API returns, with example error envelopes and guidance on handling each failure mode."
 ---
 
 The VAMS API signals errors through standard HTTP status codes and a consistent JSON envelope. When a request fails, the response body always sets `"success": false`, includes a human-readable `message`, and — for validation failures — an `errors` object with per-field detail. Checking the status code first is the most reliable way to branch your error-handling logic.

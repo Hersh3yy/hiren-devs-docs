@@ -18,7 +18,7 @@ Items in a Mosaic can reference:
 - **A text tile** — A short text block within the grid.
 
 <Note>
-  Mosaics support **separate layouts for desktop and mobile**. Each layout is independent, so you can arrange your grid one way for large screens and a completely different way for smaller devices — without affecting the other layout.
+  Mosaics support between **2 and 5 columns**. Choose your column count when creating a mosaic — you can update it at any time from the mosaic's edit view.
 </Note>
 
 ## Creating a Mosaic
@@ -31,7 +31,7 @@ Items in a Mosaic can reference:
   <Step title="Name your mosaic">
     Enter a **Title** for the mosaic. Like albums, mosaic titles can be used for API lookups, so choose something descriptive and unique — for example, `"Portfolio Home"` or `"Spring Collection 2024"`.
 
-    Optionally add a **Description** to give the mosaic context. When you're ready, save to create it.
+    Set the number of **Columns** (between 2 and 5) to define the grid width. Optionally add a **Description** to give the mosaic context. When you're ready, save to create it.
   </Step>
 
   <Step title="Open the mosaic editor">
@@ -79,15 +79,9 @@ Open the item editor by clicking the tile, then click **Delete** at the bottom o
   A short text block placed in the grid. Useful for labels, captions, or brief statements directly embedded in the layout.
 </Accordion>
 
-## Desktop and Mobile Layouts
+## Display Settings
 
-Mosaics maintain two independent layout grids: one for **desktop** and one for **mobile**. This means you can configure a four-column grid for large screens while presenting a single-column arrangement on phones — each layout is stored and served separately.
-
-<Note>
-  Changes you make to the desktop layout do **not** automatically apply to the mobile layout, and vice versa. Make sure to configure both layouts if you need responsive control over how your Mosaic renders.
-</Note>
-
-When your front-end requests a Mosaic from the API, the response includes both layout grids, and your front-end code chooses which to render based on the device or viewport size.
+Each Mosaic has a set of display settings that control how it renders in your front-end. These include the gap between tiles, padding around the grid, and whether image titles and captions are shown. You can adjust these settings at any time from the **Edit Mosaic** view, and your front-end can use the values returned in the API response to apply them automatically.
 
 ## Deleting a Mosaic
 

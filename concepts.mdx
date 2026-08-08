@@ -1,7 +1,7 @@
 ---
-title: "Core Concepts: Understanding How VAMS Works"
+title: "VAMS Core Concepts: Albums, Mosaics, Entries Explained"
 sidebarTitle: "Concepts"
-description: "A clear explanation of the five building blocks of VAMS — albums, album images, mosaics, entries and entry types, and API keys."
+description: "A clear explanation of the five building blocks of VAMS — albums, album images, mosaics, entries and entry types, and API keys — and how they connect."
 ---
 
 Before you start building with VAMS, it helps to understand the five core concepts that the entire system is built around. Each concept maps to a distinct type of content or credential that you manage through the dashboard and access through the API. Taken together, they give you a flexible, structured foundation for any creative content workflow.
@@ -22,9 +22,9 @@ Before you start building with VAMS, it helps to understand the five core concep
   </Accordion>
 
   <Accordion title="Mosaics" icon="table-cells-large">
-    A mosaic is a named visual grid layout composed of album references arranged as tiles. You build mosaics using a drag-and-drop interface in the dashboard, placing albums into a configurable grid. Because desktop and mobile screens have very different proportions and space constraints, VAMS lets you maintain completely separate layout configurations for each breakpoint — the same mosaic can have a three-column desktop grid and a single-column mobile stack.
+    A mosaic is a named visual grid layout composed of album tiles arranged across a configurable number of columns. You build mosaics using the dashboard interface, placing albums into columns and ordering them within each column. You set the number of columns for the grid (between 2 and 5), and items within each column are ordered independently — giving you precise control over the visual rhythm of the layout.
 
-    When your frontend fetches a mosaic via the API, it receives both the desktop and mobile layout objects along with the referenced album data, giving you everything you need to render an accurate, responsive visual grid without any additional lookups.
+    When your frontend fetches a mosaic via the API, it receives the mosaic metadata (title, description, column count) together with all its items. Each item carries its column position, its order within that column, and a reference to the album it represents — giving you everything you need to render the layout exactly as you designed it.
 
     **API endpoints:** `GET /api/mosaics`, `GET /api/mosaics/{id}`, `GET /api/mosaics/by-title/{title}`
   </Accordion>
@@ -32,7 +32,7 @@ Before you start building with VAMS, it helps to understand the five core concep
   <Accordion title="Entries & Entry Types" icon="list">
     Entry Types are flexible content schemas defined by your VAMS administrator. An Entry Type gives a category of content its name and field structure — for example, an administrator might create an "Artist Statement" type with a text field and a date field, or a "Case Study" type with title, body, and link fields. Entry Types let VAMS adapt to whatever structured content your creative practice requires, beyond just images.
 
-    An Entry is a single record that conforms to an Entry Type. Once an Entry Type exists, you create individual entries against it through the dashboard — filling in the fields defined by the schema. Entries are accessible via the API grouped by type, so your frontend can fetch all entries of a given type in one request and render them consistently.
+    An Entry is a single record that conforms to an Entry Type. Once an Entry Type exists, you create individual entries against it through the dashboard — filling in the fields defined by the schema. Like albums, entries have a publish state: only entries you've marked as **Published** are returned by the API. Entries in draft remain private until you're ready to share them. Entries are accessible via the API grouped by type, so your frontend can fetch all entries of a given type in one request and render them consistently.
 
     **API endpoints:** `GET /api/entries`, `GET /api/entries/{id}`, `GET /api/entries/by-type/{type}`
   </Accordion>
