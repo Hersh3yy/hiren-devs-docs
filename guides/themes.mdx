@@ -1,0 +1,38 @@
+---
+title: "Themes and Appearance Settings in VAMS"
+sidebarTitle: "Themes"
+description: "Switch between dark and light mode in the VAMS admin interface, and learn how your brand colors flow through to API-powered frontends."
+---
+
+VAMS gives you control over appearance at two distinct levels: the look of the **admin interface** you use every day, and the **brand colors** that travel through your API responses to external frontends. Understanding the difference helps you configure each independently and get the most out of both.
+
+<Note>
+  Theme settings for the admin interface (dark/light mode) are completely separate from the display settings that affect your API consumers. Switching the interface to dark mode has no impact on what your API returns or how your public-facing frontend looks.
+</Note>
+
+## Admin Interface: Dark Mode and Light Mode
+
+The VAMS admin interface has full support for both dark and light modes. You can switch between them at any time — the change is instant and applies across every page of the admin.
+
+<CardGroup cols={2}>
+  <Card title="Dark Mode" icon="moon">
+    A dark-background interface that reduces eye strain in low-light environments and is the preferred choice for most creatives working long sessions.
+  </Card>
+  <Card title="Light Mode" icon="sun">
+    A bright, high-contrast interface that works well in well-lit environments and matches standard web conventions.
+  </Card>
+</CardGroup>
+
+### Respecting Your System Preference
+
+VAMS automatically detects your operating system's appearance preference on first load. If your system is set to dark mode, the interface will open in dark mode. If your system is set to light mode, it will open in light mode. You can always override this manually using the theme toggle in the interface — your choice is saved for future sessions.
+
+## Brand Colors and API-Powered Frontends
+
+Beyond the admin interface, VAMS lets you define a **main color** and a **secondary color** that are embedded directly in your API responses. These colors are part of your [Display Settings](/guides/display-settings) and are designed to flow through to any external frontend you build on top of the VAMS API — your portfolio site, a client gallery, or any headless integration.
+
+Because the colors are delivered alongside your content in the API response, your frontend can read them dynamically and apply them as CSS variables, inline styles, or theme tokens — no hard-coding required.
+
+<Tip>
+  If you want to update the brand colors your external frontend uses, head to [Display Settings](/guides/display-settings) and change your **Main Color** or **Secondary Color** values there. Updates take effect on the next API call.
+</Tip>

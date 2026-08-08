@@ -1,0 +1,108 @@
+---
+title: "VAMS API Keys: Find, Use, and Secure Your Key"
+sidebarTitle: "API Keys"
+description: "Find your VAMS API key, attach it to requests using the X-API-Key header, and follow best practices for keeping your key safe in production."
+---
+
+Every request to the VAMS API must be accompanied by your API key. The key tells VAMS which account owns the request, scopes all returned content to your data, and keeps unauthorized consumers out. This guide walks you through locating your key, wiring it into your requests, and handling the error you'll see if something goes wrong.
+
+<Note>
+  Each VAMS account has exactly one API key. You cannot create multiple keys or set per-key permissions — your single key grants read access to all published content in your account.
+</Note>
+
+## Finding your API key
+
+<Steps>
+  <Step title="Log in to your VAMS account">
+    Navigate to your VAMS instance and sign in with your credentials.
+  </Step>
+  <Step title="Open your profile">
+    Click your avatar or account name in the top navigation to open the profile menu.
+  </Step>
+  <Step title="Go to the API Key section">
+    Inside your profile settings, locate the **API Key** section. Your key is displayed there as a long alphanumeric string.
+  </Step>
+  <Step title="Copy your API key">
+    Click the copy button next to your key and store it somewhere secure — for example, an environment variable or a secrets manager. Do not paste it directly into source code.
+  </Step>
+</Steps>
+
+## Using your API key
+
+Pass your key as the value of the `X-API-Key` header on every API request. VAMS does not support query-string authentication or cookie-based auth for API routes.
+
+<CodeGroup>
+
+```javascript JavaScript (fetch)
+const response = await fetch('/api/albums', {
+  headers: {
+    'X-API-Key': process.env.VAMS_API_KEY
+  }
+});
+
+if (!response.ok) {
+  throw new Error(`API error: ${response.status}`);
+}
+
+const { data } = await response.json();
+console.log(data.albums);
+```
+
+```bash cURL
+curl -H "X-API-Key: your-api-key-here" \
+  https://your-vams-instance.com/api/albums
+```
+
+</CodeGroup>
+
+<Tip>
+  Store your API key in an environment variable (e.g., `VAMS_API_KEY`) rather than hard-coding it. This keeps sensitive credentials out of version control and makes rotating the key straightforward.
+</Tip>
+
+## What happens when the key is missing or invalid
+
+If you omit the `X-API-Key` header, supply an incorrect value, or use a key that belongs to a deactivated account, the API returns a `401 Unauthorized` response:
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "data": null
+}
+```
+
+Common causes of a `401` error:
+
+- The `X-API-Key` header is missing entirely from the request.
+- The key value has a leading or trailing space introduced during copy-paste.
+- The key was regenerated and the old value is no longer valid.
+
+You can verify that your key is working at any time by calling the test endpoint:
+
+```bash
+curl -H "X-API-Key: your-api-key-here" \
+  https://your-vams-instance.com/api/test
+```
+
+A valid key returns a `200` response with your account name and a server timestamp:
+
+```json
+{
+  "message": "API key authentication successful",
+  "user": "Your Name",
+  "timestamp": "2024-07-15T08:30:00.000000Z"
+}
+```
+
+## Security best practices
+
+<Warning>
+  Never embed your raw API key in client-side JavaScript, mobile app binaries, or any code that ships to end users. Anyone who can inspect your frontend bundle or network traffic can extract the key and make requests on your behalf.
+</Warning>
+
+Follow these practices to keep your key safe:
+
+- **Use a server-side proxy.** In production, route API requests through your own backend server. Your server holds the key and forwards requests to VAMS — the key is never exposed to browsers.
+- **Use environment variables.** Set `VAMS_API_KEY` in your deployment environment rather than committing the key to your repository.
+- **Restrict CORS on your VAMS instance.** Update `config/cors.php` to allow only your trusted domains, so even if a key leaks it cannot be used from arbitrary origins.
+- **Treat your key like a password.** If you suspect your key has been compromised, contact support or regenerate it immediately from your profile settings.

@@ -1,47 +1,113 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Quickstart: Make Your First VAMS API Call"
+sidebarTitle: "Quickstart"
+description: "Log in, create an album, upload an image, grab your API key, and fetch your content via the API — all in under ten minutes."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
-
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
-
-## Prerequisites
-
-Before you begin, you must have:
-
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
-
-## Get started
+This guide walks you through the fastest path from a new VAMS account to live content served over the API. By the end you will have a published album with at least one image and a working API call returning your data in JSON.
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
+  <Step title="Log in to your dashboard">
+    Navigate to your VAMS instance and sign in with your credentials. You'll land on the main dashboard, which shows an overview of your albums, mosaics, and recent activity.
 
-    ```bash
-    npm install your-package
-    ```
+    <Tip>
+      If this is your first time logging in, your API key has already been generated. Head to **Profile → API Key** at any point to find it.
+    </Tip>
   </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
 
-    ```bash
-    your-cli init
-    ```
+  <Step title="Create your first album">
+    1. Click **Albums** in the sidebar, then select **Create Album**.
+    2. Give your album a title and an optional description.
+    3. Save the album. It starts in an unpublished state — you control when it appears in API responses.
+
+    <Note>
+      Only published albums are returned by the public API. You can create and edit content freely in draft state before making it live.
+    </Note>
   </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
 
-    ```bash
-    your-cli start
+  <Step title="Upload an image">
+    1. Open the album you just created.
+    2. Click **Add Image** and select a file from your device.
+    3. Optionally add a title or alt text for the image.
+    4. Save the image — it is now part of your album's ordered collection.
+
+    Once you're happy with your content, return to the album settings and toggle the album to **Published**.
+  </Step>
+
+  <Step title="Get your API key">
+    1. Click your profile name or avatar in the top navigation.
+    2. Go to **Profile → API Key**.
+    3. Copy the key shown — you'll use it in the `X-API-Key` header for every API request.
+
+    <Warning>
+      Treat your API key like a password. Anyone with it can read all your published content. If you believe it has been compromised, contact your VAMS administrator to regenerate it.
+    </Warning>
+  </Step>
+
+  <Step title="Make your first API call">
+    With your API key in hand, you can now fetch your albums from any HTTP client. Here's how to do it with the browser's native `fetch` API and with `curl`:
+
+    <CodeGroup>
+      ```js JavaScript
+      fetch('/api/albums', {
+        headers: {
+          'X-API-Key': 'your-api-key'
+        }
+      })
+        .then(response => response.json())
+        .then(data => console.log(data));
+      ```
+
+      ```bash cURL
+      curl -H "X-API-Key: your-api-key" \
+        https://your-vams-domain.com/api/albums
+      ```
+    </CodeGroup>
+
+    A successful response returns a JSON array of your published albums:
+
+    ```json Example response
+    {
+      "data": [
+        {
+          "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+          "title": "Summer Collection",
+          "description": "A selection of outdoor work from July.",
+          "published": true,
+          "images": [
+            {
+              "id": "f0e1d2c3-b4a5-6789-0fed-cba987654321",
+              "title": "Golden Hour",
+              "url": "https://assets.example.com/images/golden-hour.jpg",
+              "order": 1
+            }
+          ],
+          "created_at": "2025-01-15T10:30:00Z",
+          "updated_at": "2025-01-20T14:45:00Z"
+        }
+      ]
+    }
+    ```
+
+    You can also verify your API key is valid at any time using the test endpoint:
+
+    ```js Test your connection
+    fetch('/api/test', {
+      headers: {
+        'X-API-Key': 'your-api-key'
+      }
+    })
+      .then(response => response.json())
+      .then(data => console.log(data));
+    // { "message": "API key authentication successful", "user": "Your Name", ... }
     ```
   </Step>
 </Steps>
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+## What to explore next
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+Now that you have a working API call, here are the natural next steps:
+
+- **Fetch a specific album** by ID with `GET /api/albums/{id}` or by title with `GET /api/albums/by-title/{title}`
+- **Build a mosaic layout** to arrange your albums into a visual grid and fetch it via `GET /api/mosaics`
+- **Create entry types and entries** for flexible content like artist statements or project descriptions, fetchable at `GET /api/entries`

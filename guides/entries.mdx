@@ -1,0 +1,110 @@
+---
+title: "Manage Entries and Custom Content Types"
+sidebarTitle: "Entries"
+description: "Use entries to manage structured text content like artist statements, case studies, and any custom content type configured for your workspace."
+---
+
+Entries are VAMS's flexible structured-content system. While albums and mosaics are built for visual media, entries let you manage text-based or mixed content that follows a defined structure — things like artist statements, project case studies, press quotes, or any other content type your workspace supports. Each entry belongs to an **entry type**, which defines what fields are available and what kind of information you fill in. Your workspace admin configures entry types, so the fields you see when creating an entry depend on which type you're working with.
+
+## What Are Entry Types?
+
+An entry type is a named content schema — for example, "Artist Statement" or "Case Study". Each entry type has a set of **fields** with specific types (text, textarea, select, and so on). When you create a new entry, you're always creating it *within* a specific entry type, and the form you fill in is generated directly from that type's field configuration.
+
+<Note>
+  Entry types are created and managed by your workspace administrator. If you need a new entry type or a change to an existing one's fields, reach out to your admin.
+</Note>
+
+Entries also support **draft** and **published** statuses, so you can work on content privately before making it available through the API.
+
+## Browsing and Filtering Entries
+
+Entries are always viewed within the context of an entry type. From the **Entries** section of the dashboard, select the entry type you want to work with (for example, `?type=artist-statement`). You'll see all entries of that type listed in their current order.
+
+## Creating an Entry
+
+<Steps>
+  <Step title="Navigate to the correct entry type">
+    From the **Entries** page, make sure you've selected the right entry type from the filter or URL parameter. The form fields shown during creation are determined by this type.
+  </Step>
+
+  <Step title="Click 'Create Entry'">
+    Click the **Create Entry** button. You'll be taken to the entry creation form, which is built dynamically from the entry type's field configuration.
+  </Step>
+
+  <Step title="Fill in the Title">
+    Every entry requires a **Title**, regardless of its type. This is used to identify the entry in your list and in API responses.
+  </Step>
+
+  <Step title="Complete the content fields">
+    Below the title, fill in each field defined by the entry type. The fields vary depending on your content type — see the field types reference below for details on how each one works.
+  </Step>
+
+  <Step title="Set the status">
+    Use the **Status** toggle or selector to choose between **Draft** and **Published**. Draft entries are stored but hidden from API responses. Published entries are available immediately.
+  </Step>
+
+  <Step title="Save the entry">
+    Click **Create** to save the entry. You'll be redirected back to the entry list for that type.
+  </Step>
+</Steps>
+
+## Field Types
+
+The fields you see on an entry form depend on which field types the entry type uses. Below is a reference for each possible field type you might encounter.
+
+<Accordion title="Text">
+  A single-line text input. Use this for short values like a client name, project title, role, or any other brief piece of information.
+
+  **Example use cases:** Client name, location, tagline, author name
+</Accordion>
+
+<Accordion title="Textarea">
+  A multi-line text input for longer content. Use this for paragraphs, descriptions, artist statements, or any block of prose.
+
+  **Example use cases:** Project description, artist statement, section body text, biography
+</Accordion>
+
+<Accordion title="Number">
+  A numeric input that only accepts numbers. Use this for quantities, years, durations, or any measurable value.
+
+  **Example use cases:** Year of creation, image count, project duration in weeks
+</Accordion>
+
+<Accordion title="Select">
+  A dropdown menu with a predefined set of options. The available choices are defined by your workspace admin as part of the entry type's field configuration. Choose the option that best matches your content.
+
+  **Example use cases:** Category, medium, project status, region
+</Accordion>
+
+<Accordion title="Checkbox">
+  A true/false toggle. Use this for binary flags or yes/no attributes.
+
+  **Example use cases:** Featured project, available for commission, includes print rights
+</Accordion>
+
+## Publishing and Draft Status
+
+Entries support two statuses:
+
+- **Draft** — The entry is saved and visible in your VAMS dashboard, but it is **not** returned by the API. Use this when content is still being written or awaiting review.
+- **Published** — The entry is live and available through the API. The `published_at` timestamp is recorded when an entry is first published.
+
+If you update a published entry and save it as a draft, it will be immediately hidden from API responses. Re-publishing it will preserve the original `published_at` timestamp.
+
+## Viewing and Editing an Entry
+
+To view the details of an entry, click its title in the list. From the detail view you can see all the field values as they were saved.
+
+To make changes, click the **Edit** button from the detail view. Update any fields you need to change and click **Save** to apply your updates. You can also change the status between draft and published from the edit form.
+
+## Reordering Entries
+
+Entries within a type can be reordered to control the sequence in which they appear in API responses. Drag and drop entries in the list view to rearrange them. The new order is saved automatically.
+
+## Deleting an Entry
+
+To delete an entry, open it and click **Delete**. You'll be asked to confirm before the entry is permanently removed. After deletion, you're redirected back to the entry list for that type.
+
+<Warning>
+  Deleting an entry is permanent and cannot be undone. If you want to hide an entry from the API without removing it entirely, set its status to **Draft** instead.
+</Warning>

@@ -1,0 +1,85 @@
+---
+title: "Configuring Album Display Settings in VAMS"
+sidebarTitle: "Display Settings"
+description: "Control which metadata fields and brand colors are included in your API responses so any external frontend can render your albums consistently."
+---
+
+Display settings let you define exactly how your album content is presented when it is fetched through the VAMS API. Every API response for your albums includes an `album_display_settings` object carrying your preferences — brand colors and the visibility of each metadata field — so external frontends and headless clients can render your content exactly the way you intend without any additional configuration on their end.
+
+These settings are per-account and apply uniformly to all albums served under your API key. You can update them at any time from the **Profile** page under the **Album Display Settings** section.
+
+<Tip>
+  Changes to your display settings take effect immediately on the next API call — there is no cache to clear or deployment to trigger.
+</Tip>
+
+## Brand Colors
+
+Two hex color values let you pass your visual identity through the API so external frontends can apply consistent branding without hard-coding colors on their side.
+
+<Accordion title="Main Color">
+  **Type:** Hex color string (e.g. `#4F46E5`)
+
+  Your primary brand color. Use this for dominant UI elements in your frontend such as headings, buttons, and active states. The default value is `#4F46E5` (indigo).
+</Accordion>
+
+<Accordion title="Secondary Color">
+  **Type:** Hex color string (e.g. `#10B981`)
+
+  Your accent or supporting brand color. Use this for highlights, borders, tags, and secondary interactive elements. The default value is `#10B981` (emerald).
+</Accordion>
+
+Enter each value directly as a hex code in the corresponding color field on the Profile page, then click **Save Display Settings**.
+
+## Metadata Toggle Fields
+
+Each toggle controls whether a specific metadata field is included in your API response payloads. Disabling a field does not delete the underlying data — it simply omits it from the response so your frontend doesn't have to filter it out manually.
+
+<Accordion title="Title">
+  **Default:** enabled
+
+  The title of the album image or asset. Enable this if your frontend displays image titles as headings, captions, or overlay labels.
+</Accordion>
+
+<Accordion title="Author">
+  **Default:** enabled
+
+  The name of the person credited with creating the image or asset. Enable this for portfolios, editorial sites, or anywhere attribution needs to be surfaced.
+</Accordion>
+
+<Accordion title="Caption">
+  **Default:** enabled
+
+  A descriptive or narrative caption for the image. Enable this when your frontend renders body text beneath or alongside images.
+</Accordion>
+
+<Accordion title="Alt Text">
+  **Default:** enabled
+
+  The accessibility description for the image. You should keep this enabled whenever your frontend renders `<img>` elements — it is essential for screen readers and SEO.
+</Accordion>
+
+<Accordion title="Date Created">
+  **Default:** enabled
+
+  The date the image or asset was originally created. Enable this for timelines, galleries sorted by date, or anywhere a timestamp adds context.
+</Accordion>
+
+<Accordion title="Location">
+  **Default:** enabled
+
+  The geographic location associated with the image. Enable this for travel photography, event documentation, or location-tagged portfolios.
+</Accordion>
+
+<Accordion title="Tags">
+  **Default:** enabled
+
+  A list of descriptive tags attached to the image. Enable this to support filtering, search, or tag-cloud features in your frontend.
+</Accordion>
+
+## Saving Your Settings
+
+Once you have configured your colors and toggled the fields you want, scroll to the bottom of the **Album Display Settings** section and click **Save Display Settings**. The page will refresh and your new preferences will be stored immediately.
+
+<Note>
+  All toggles are enabled by default when you first create your account. You only need to visit this section if you want to customise which fields are included or set your brand colors.
+</Note>

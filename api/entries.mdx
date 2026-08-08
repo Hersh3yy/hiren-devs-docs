@@ -1,0 +1,351 @@
+---
+title: "Entries API — List and Retrieve Structured Content"
+sidebarTitle: "Entries"
+description: "Access published structured content entries — such as statements, recipes, or custom types — scoped to your account's permitted entry types."
+---
+
+Entries are flexible, schema-driven content objects that live outside of albums and mosaics. Common uses include artist statements, journal entries, recipes, press quotes, and any other structured text or rich-content type you define in VAMS. Each entry belongs to an **entry type**, which determines the shape of its `content` JSON object. The Entries API exposes three read-only endpoints, all of which are automatically filtered to the entry types your account has been granted access to.
+
+<Note>
+  Entry type access is controlled by account permissions. If your account has not been assigned a particular entry type, requests for that type return a `403 Forbidden` response. Contact your VAMS administrator to have additional entry types enabled for your API key.
+</Note>
+
+---
+
+## List All Entries
+
+Returns all published entries across every entry type your account is permitted to access. The response also includes a summary of those permitted entry types so you know what categories are available.
+
+```
+GET /api/entries
+```
+
+### Response Fields
+
+<ResponseField name="success" type="boolean">
+  Always `true` for a successful response.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data">
+    <ResponseField name="entries" type="array">
+      Array of entry objects. Empty (`[]`) if no permitted entry types are assigned to your account.
+      <Expandable title="entry object">
+        <ResponseField name="id" type="string">
+          UUID of the entry.
+        </ResponseField>
+        <ResponseField name="title" type="string">
+          Entry title.
+        </ResponseField>
+        <ResponseField name="content" type="object">
+          JSON object whose keys and values are defined by the entry type's field configuration. The shape varies between entry types — see [Content Shape](#content-shape) below.
+        </ResponseField>
+        <ResponseField name="status" type="string">
+          Publication status. Always `"published"` for entries returned by this endpoint.
+        </ResponseField>
+        <ResponseField name="published_at" type="string">
+          ISO 8601 timestamp of when the entry was published.
+        </ResponseField>
+        <ResponseField name="order" type="integer">
+          Sort position of this entry within its type (ascending).
+        </ResponseField>
+        <ResponseField name="entry_type" type="object">
+          <Expandable title="entry_type">
+            <ResponseField name="id" type="string">
+              UUID of the entry type.
+            </ResponseField>
+            <ResponseField name="name" type="string">
+              Human-readable name of the entry type, e.g. `"Statements"`.
+            </ResponseField>
+            <ResponseField name="slug" type="string">
+              URL-safe slug used to query this type, e.g. `"statements"`.
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="user_id" type="string">
+          UUID of the account that owns this entry.
+        </ResponseField>
+        <ResponseField name="created_at" type="string">
+          ISO 8601 creation timestamp.
+        </ResponseField>
+        <ResponseField name="updated_at" type="string">
+          ISO 8601 last-updated timestamp.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="entry_types" type="array">
+      Summary of every entry type your account is permitted to access.
+      <Expandable title="entry type summary">
+        <ResponseField name="id" type="string">
+          UUID of the entry type.
+        </ResponseField>
+        <ResponseField name="name" type="string">
+          Human-readable name.
+        </ResponseField>
+        <ResponseField name="slug" type="string">
+          URL-safe slug (use this in the `by-type` endpoint).
+        </ResponseField>
+        <ResponseField name="description" type="string | null">
+          Optional description of what this entry type represents.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Examples
+
+<CodeGroup>
+
+```javascript JavaScript
+const res = await fetch('https://<your-vams-domain>/api/entries', {
+  headers: { 'X-API-Key': 'your-api-key-here' }
+});
+const data = await res.json();
+console.log(data.data.entries);
+console.log(data.data.entry_types);
+```
+
+```bash curl
+curl https://<your-vams-domain>/api/entries \
+  -H "X-API-Key: your-api-key-here"
+```
+
+</CodeGroup>
+
+**Example response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "entries": [
+      {
+        "id": "019e5f6a-7b8c-9d0e-1f2a-3b4c5d6e7f8a",
+        "title": "My Practice",
+        "content": {
+          "body": "My work explores the tension between stillness and motion in urban spaces.",
+          "year": "2024"
+        },
+        "status": "published",
+        "published_at": "2024-07-01T08:00:00.000Z",
+        "order": 0,
+        "entry_type": {
+          "id": "018a1b2c-3d4e-5f6a-7b8c-9d0e1f2a3b4c",
+          "name": "Statements",
+          "slug": "statements"
+        },
+        "user_id": "018e9d8c-7b6a-5f4e-3d2c-1b0a9f8e7d6c",
+        "created_at": "2024-07-01T07:45:00.000Z",
+        "updated_at": "2024-07-01T08:00:00.000Z"
+      }
+    ],
+    "entry_types": [
+      {
+        "id": "018a1b2c-3d4e-5f6a-7b8c-9d0e1f2a3b4c",
+        "name": "Statements",
+        "slug": "statements",
+        "description": "Artist statements and written practice descriptions."
+      }
+    ]
+  }
+}
+```
+
+---
+
+## List Entries by Type
+
+Returns all published entries belonging to a specific entry type, identified by the type's `slug`. Your account must have permission to access that type, or the API returns `403 Forbidden`.
+
+```
+GET /api/entries/by-type/{type}
+```
+
+### Path Parameters
+
+<ParamField path="type" type="string" required>
+  The `slug` of the entry type, e.g. `statements`, `recipes`, or `press-quotes`. You can discover available slugs from the `entry_types` array returned by [List All Entries](#list-all-entries).
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="data" type="object">
+  <Expandable title="data">
+    <ResponseField name="entries" type="array">
+      Array of entry objects of the requested type. Same shape as described in [List All Entries](#list-all-entries).
+    </ResponseField>
+    <ResponseField name="entry_type" type="object">
+      Metadata about the requested entry type.
+      <Expandable title="entry_type">
+        <ResponseField name="id" type="string">UUID of the entry type.</ResponseField>
+        <ResponseField name="name" type="string">Human-readable name.</ResponseField>
+        <ResponseField name="slug" type="string">URL-safe slug.</ResponseField>
+        <ResponseField name="description" type="string | null">Optional description.</ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Examples
+
+<CodeGroup>
+
+```javascript JavaScript
+const res = await fetch('https://<your-vams-domain>/api/entries/by-type/statements', {
+  headers: { 'X-API-Key': 'your-api-key-here' }
+});
+const data = await res.json();
+console.log(data.data.entries);
+console.log(data.data.entry_type);
+```
+
+```bash curl
+curl https://<your-vams-domain>/api/entries/by-type/statements \
+  -H "X-API-Key: your-api-key-here"
+```
+
+</CodeGroup>
+
+**Example response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "entries": [
+      {
+        "id": "019e5f6a-7b8c-9d0e-1f2a-3b4c5d6e7f8a",
+        "title": "My Practice",
+        "content": {
+          "body": "My work explores the tension between stillness and motion in urban spaces.",
+          "year": "2024"
+        },
+        "status": "published",
+        "published_at": "2024-07-01T08:00:00.000Z",
+        "order": 0,
+        "entry_type": {
+          "id": "018a1b2c-3d4e-5f6a-7b8c-9d0e1f2a3b4c",
+          "name": "Statements",
+          "slug": "statements"
+        },
+        "user_id": "018e9d8c-7b6a-5f4e-3d2c-1b0a9f8e7d6c",
+        "created_at": "2024-07-01T07:45:00.000Z",
+        "updated_at": "2024-07-01T08:00:00.000Z"
+      }
+    ],
+    "entry_type": {
+      "id": "018a1b2c-3d4e-5f6a-7b8c-9d0e1f2a3b4c",
+      "name": "Statements",
+      "slug": "statements",
+      "description": "Artist statements and written practice descriptions."
+    }
+  }
+}
+```
+
+If your account does not have permission for the requested entry type, the API returns:
+
+```json
+{
+  "success": false,
+  "message": "You do not have permission to access this entry type"
+}
+```
+
+If the slug does not correspond to any active entry type, the API returns a `404`.
+
+---
+
+## Get Entry by ID
+
+Returns a single published entry identified by its UUID. The API verifies that your account has permission for the entry's type before returning the response.
+
+```
+GET /api/entries/{id}
+```
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  The UUID of the entry to retrieve.
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="data" type="object">
+  A single entry object with the same fields described in [List All Entries](#list-all-entries).
+</ResponseField>
+
+### Examples
+
+<CodeGroup>
+
+```javascript JavaScript
+const entryId = '019e5f6a-7b8c-9d0e-1f2a-3b4c5d6e7f8a';
+
+const res = await fetch(`https://<your-vams-domain>/api/entries/${entryId}`, {
+  headers: { 'X-API-Key': 'your-api-key-here' }
+});
+const data = await res.json();
+console.log(data.data);
+```
+
+```bash curl
+curl https://<your-vams-domain>/api/entries/019e5f6a-7b8c-9d0e-1f2a-3b4c5d6e7f8a \
+  -H "X-API-Key: your-api-key-here"
+```
+
+</CodeGroup>
+
+**Example response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "019e5f6a-7b8c-9d0e-1f2a-3b4c5d6e7f8a",
+    "title": "My Practice",
+    "content": {
+      "body": "My work explores the tension between stillness and motion in urban spaces.",
+      "year": "2024"
+    },
+    "status": "published",
+    "published_at": "2024-07-01T08:00:00.000Z",
+    "order": 0,
+    "entry_type": {
+      "id": "018a1b2c-3d4e-5f6a-7b8c-9d0e1f2a3b4c",
+      "name": "Statements",
+      "slug": "statements"
+    },
+    "user_id": "018e9d8c-7b6a-5f4e-3d2c-1b0a9f8e7d6c",
+    "created_at": "2024-07-01T07:45:00.000Z",
+    "updated_at": "2024-07-01T08:00:00.000Z"
+  }
+}
+```
+
+---
+
+## Content Shape
+
+The `content` field is a JSON object whose keys and value types are defined by the entry type's field configuration in VAMS. There is no fixed schema — the content object can contain plain text fields, rich text, numbers, dates, or any other values your administrator has set up for that type.
+
+```json
+// A "statements" entry might look like:
+"content": {
+  "body": "My work explores ...",
+  "year": "2024"
+}
+
+// A "recipes" entry might look like:
+"content": {
+  "ingredients": ["flour", "eggs", "butter"],
+  "steps": "Mix together ...",
+  "prep_time_minutes": 30
+}
+```
+
+<Note>
+  Check the `entry_type.slug` on each entry to determine which content shape applies, and refer to your VAMS administrator or the VAMS admin panel for the canonical field definitions for each type.
+</Note>

@@ -1,0 +1,84 @@
+---
+title: "Upload and Manage Media Files in VAMS"
+sidebarTitle: "Media"
+description: "Learn how to upload images and videos to albums and mosaics, manage published state, reorder files, and keep your media library organized."
+---
+
+Media in VAMS encompasses all the images and video files you upload across your albums, mosaics, and entries. You don't manage media in one central bucket — instead, images are always associated with a specific album, mosaic, or entry at the time of upload. This keeps your library organized around the content it belongs to, while still letting you reorder, publish, unpublish, and remove files with full control. Understanding how media flows through VAMS will help you keep your portfolio looking exactly the way you intend.
+
+## Uploading Images
+
+Images are uploaded directly within the context they belong to — either an album, a mosaic item, or an entry's image field. Navigate to the album, mosaic, or entry where you want to add images, then use the **Upload Images** (or **Upload Media**) button.
+
+<Accordion title="Supported formats and size guidance">
+  VAMS accepts the following file formats:
+
+  - **JPEG / JPG** — Ideal for photographs and richly colored images
+  - **PNG** — Best for illustrations, graphics, or images with transparent backgrounds
+  - **GIF** — Supported for short animated sequences
+  - **WebP** — Accepted directly; VAMS may also convert other formats to WebP automatically for faster delivery
+  - **MP4, MOV, AVI** — Supported for video uploads in mosaics and albums
+
+  **Size guidance:** Keep individual images under **2 MB** for the smoothest upload experience. VAMS performs automatic WebP conversion on images where possible, which reduces file sizes without affecting visual quality. Video files can be larger, but uploads above approximately 30 MB may be rejected depending on your workspace configuration.
+</Accordion>
+
+<Tip>
+  Always fill in the **alt text** field when uploading an image. Alt text describes the image for screen readers and search engines, making your portfolio more accessible to visitors using assistive technology and more discoverable in image search results.
+</Tip>
+
+## Images in Albums
+
+When you upload images to an album, each image is stored and linked to that album. The images appear in the album's detail view and are served through the API in the order you've arranged them.
+
+You can also upload **video links** (YouTube or Vimeo) to an album. VAMS automatically fetches and stores a thumbnail image for each video, so it displays consistently alongside your still images in any layout.
+
+Each image in an album can store optional metadata alongside the file:
+
+- **Title** — A name for the image
+- **Caption** — A short description displayed beneath the image in some layouts
+- **Alt text** — A text description for accessibility and SEO
+
+## Published vs. Unpublished Images
+
+Individual images within an album can be published or unpublished independently of the album itself. This gives you fine-grained control over which images appear in API responses.
+
+- An **unpublished image** is hidden from the API even if its parent album is published.
+- A **published image** in an **unpublished album** is also hidden — both the album and the image must be published for the image to appear in the API.
+
+To change an image's published state, open the image within the album view and toggle its **Published** status.
+
+## Reordering Images Within an Album
+
+The order of images in an album controls the sequence in which they are returned by the API and displayed in Mosaic layouts that reference the album. You can reorder images at any time using drag and drop.
+
+From the album detail view, press and hold an image thumbnail and drag it to its new position within the grid. The new order is saved automatically.
+
+<Tip>
+  If your front-end displays images as a slideshow or scrollable sequence, updating the order in VAMS directly controls how visitors experience the work — no code changes needed on the front-end side.
+</Tip>
+
+## Images in Mosaics
+
+Mosaics support **standalone media uploads** — images and videos you add directly to a mosaic item, without needing an album. These are uploaded through the mosaic item editor and stored independently. They are useful for one-off visuals or layout accents that don't belong in a dedicated album.
+
+For media uploaded directly to a mosaic:
+
+- Supported formats include JPEG, PNG, GIF, WebP, MP4, MOV, and AVI
+- Images are automatically converted to WebP where possible
+- The uploaded file URL and metadata are returned as part of the mosaic's API response
+
+## Viewing Your Media Library
+
+Your images are always browsable within the album, mosaic, or entry they belong to. Open any album to see all of its images in their current order. Each image tile shows its thumbnail, title, and current published state at a glance.
+
+To find a specific image, navigate to the album it belongs to and scroll through the grid. You can also search or filter your albums list to narrow down which album you're looking in.
+
+## Deleting Images
+
+To remove an image from an album, open the album detail view, locate the image, and select **Delete** from the image's action menu. To remove a standalone media file from a mosaic item, open the mosaic item editor and delete or replace the file there.
+
+<Warning>
+  **Deleting an image is permanent and cannot be undone.** Once removed, the file is deleted from storage and cannot be recovered. If you want to hide an image from the API without permanently removing it, set it to **unpublished** instead.
+</Warning>
+
+Deleting an image from an album does not delete the album itself, and does not affect any other images in the album. If the deleted image was set as the album's cover image, the cover will be cleared and you'll need to select a new one.

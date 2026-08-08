@@ -1,0 +1,97 @@
+---
+title: "Create and Manage Albums in VAMS"
+sidebarTitle: "Albums"
+description: "Learn how to create albums, upload images, reorder your media, and control publishing so your portfolio is always presentation-ready."
+---
+
+Albums are the primary way you organize and display your images in VAMS. Each album acts as a curated collection — think of it as a gallery on your portfolio site. You can keep albums in draft while you work on them and publish them when they're ready for the world to see. Every album you create can also be referenced from a Mosaic layout, so your visual storytelling stays connected across your whole portfolio.
+
+<Note>
+  Only **published** albums appear in API responses. Unpublished (draft) albums are visible only to you inside the VAMS dashboard.
+</Note>
+
+## Creating Your First Album
+
+<Steps>
+  <Step title="Open the Albums section">
+    From your dashboard, click **Albums** in the sidebar. You'll see a list of all your existing albums. Click the **Create Album** button in the top-right corner.
+  </Step>
+
+  <Step title="Fill in the album details">
+    On the creation form, provide the following information:
+
+    - **Title** _(required)_ — Give your album a clear, descriptive name. This is also used for API lookups by title.
+    - **Description** _(optional)_ — Add context about the album, such as the project, date range, or artistic intent.
+    - **Published** toggle — Leave this off to save the album as a **draft**, or turn it on to make it publicly accessible via the API immediately.
+
+    Click **Save** to create the album.
+  </Step>
+
+  <Step title="Upload your images">
+    Once the album is created, you're taken to the album detail view. Use the **Upload Images** button to add images from your device. Supported formats are JPEG, PNG, JPG, and GIF.
+
+    You can upload multiple images at once — they'll be added to the album in the order they were selected.
+  </Step>
+
+  <Step title="Set a cover image">
+    To set a cover image for the album, select one of the uploaded images and choose **Set as Cover**. The cover image appears as the album thumbnail throughout VAMS and in API responses.
+
+    You can also upload a dedicated cover image separately from the main album images.
+  </Step>
+
+  <Step title="Publish the album">
+    When your album is ready, open the album's edit view and toggle **Published** to on. Click **Save** to apply the change. The album will now be available through the API.
+  </Step>
+</Steps>
+
+<Tip>
+  Use meaningful, unique titles for your albums. VAMS supports looking up albums directly by title through the API, so a descriptive title like `"Spring Campaign 2024"` is easier to work with than `"Album 1"`.
+</Tip>
+
+## Uploading Images to an Album
+
+You can add new images to an album at any time. From the album detail page, click **Upload Images** and select one or more files from your device. Each image is stored and associated with the album automatically.
+
+VAMS also supports **video files** within albums. When you add a video (such as a YouTube or Vimeo link), VAMS automatically generates a thumbnail so it displays consistently alongside your still images.
+
+<Accordion title="Supported image formats">
+  VAMS accepts the following image formats when uploading to an album:
+
+  - **JPEG / JPG** — Best for photographs and complex images
+  - **PNG** — Best for graphics, illustrations, or images with transparency
+  - **GIF** — Supported for short animations
+  - **WebP** — VAMS may automatically convert images to WebP for better performance
+
+  Keep individual image files under **2 MB** for the fastest upload experience. Very large files may take longer to process.
+</Accordion>
+
+## Reordering Images
+
+The order of images in your album controls how they appear in API responses and in any Mosaic layouts that reference the album. You can change this order at any time using drag and drop.
+
+From the album detail page, press and hold any image thumbnail, then drag it to its new position. The order is saved automatically as you rearrange.
+
+## Publishing and Unpublishing
+
+Albums and individual images each have their own published state.
+
+- **Album-level publishing** — Controls whether the entire album is visible via the API. Draft albums are hidden from all API consumers.
+- **Image-level publishing** — Individual images within an album can be unpublished without affecting the rest of the album. This is useful when you want to temporarily hide a specific image.
+
+To change an album's published state, go to the album's edit page, toggle the **Published** switch, and save.
+
+<Note>
+  Unpublishing an album hides it from the API immediately. Any Mosaic that references an unpublished album will not include that album's content in its API response.
+</Note>
+
+## Editing Album Details
+
+You can update an album's title, description, cover image, and published state at any time. From the album detail view, click the **Edit** button to open the edit form. Make your changes and click **Save** to apply them.
+
+## Deleting an Album
+
+To delete an album, navigate to the album detail page and click **Delete Album**. You'll be asked to confirm before the album is permanently removed.
+
+<Warning>
+  Deleting an album is permanent and cannot be undone. All images associated with the album will also be removed. Make sure you no longer need the album or its images before deleting.
+</Warning>

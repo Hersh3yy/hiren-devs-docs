@@ -1,0 +1,95 @@
+{
+  "projectType": "saas",
+  "projectName": "VAMS",
+  "projectDescription": "A visual asset management system and headless CMS for artists and creatives to organize albums, build mosaic layouts, and serve content to any frontend via API.",
+  "theme": "willow",
+  "primaryColor": "#6C63FF",
+  "lightColor": "#EDE9FE",
+  "darkColor": "#3730A3",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "concepts"
+            ]
+          },
+          {
+            "group": "Managing Content",
+            "pages": [
+              "guides/albums",
+              "guides/mosaics",
+              "guides/entries",
+              "guides/media"
+            ]
+          },
+          {
+            "group": "Customization",
+            "pages": [
+              "guides/profile-settings",
+              "guides/display-settings",
+              "guides/themes"
+            ]
+          },
+          {
+            "group": "Integrating VAMS",
+            "pages": [
+              "guides/api-overview",
+              "guides/api-key",
+              "guides/embedding"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api/overview",
+              "api/authentication",
+              "api/errors"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api/albums",
+              "api/mosaics",
+              "api/entries"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Album management — create and organize image collections with rich metadata and ordering",
+    "Mosaic builder — drag-and-drop visual layout composer with separate desktop and mobile grids",
+    "Dynamic entry types — flexible content structures (e.g. statements, case studies) configurable by admins",
+    "API-first architecture — read-only public API authenticated with API keys for embedding content anywhere",
+    "Per-user branding — custom logo, color themes, and display settings per account",
+    "Media management — upload, publish/unpublish, and reorder images across albums and entries",
+    "Dark mode support — full light and dark theme across the interface",
+    "Activity logging — complete audit trail of user actions"
+  ],
+  "publicApiSurface": [
+    "GET /api/albums — list all published albums",
+    "GET /api/albums/{id} — get album by ID",
+    "GET /api/albums/by-title/{title} — get album by title",
+    "GET /api/mosaics — list all mosaics",
+    "GET /api/mosaics/{id} — get mosaic by ID",
+    "GET /api/mosaics/by-title/{title} — get mosaic by title",
+    "GET /api/entries — list all entries",
+    "GET /api/entries/by-type/{type} — list entries filtered by entry type slug",
+    "GET /api/entries/{id} — get entry by ID",
+    "GET /api/test — verify API key authentication",
+    "X-API-Key header — API key authentication for all endpoints"
+  ]
+}

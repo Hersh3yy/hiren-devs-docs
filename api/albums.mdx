@@ -1,0 +1,311 @@
+---
+title: "Albums API — List and Retrieve Photo Collections"
+sidebarTitle: "Albums"
+description: "Fetch your published photo albums and their images using three read-only endpoints scoped to your API key account."
+---
+
+Albums are the primary content unit in VAMS — each album is an ordered collection of published images with metadata. The Albums API exposes three read-only endpoints that let you list all of your published albums, retrieve a single album by its UUID, or look up an album by its title. The API never returns unpublished albums or unpublished images within an album.
+
+---
+
+## List All Albums
+
+Returns all published albums belonging to your account. By default, only album metadata is returned. Pass `with_images=true` to include the full array of published images inside each album object.
+
+```
+GET /api/albums
+```
+
+### Query Parameters
+
+<ParamField query="with_images" type="boolean" default="false">
+  When `true`, each album in the response includes a populated `images` array containing every published image in that album, ordered by `order` ascending. When `false` (the default), the `images` key is omitted and only `images_count` reflects the number of published images.
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="success" type="boolean">
+  Always `true` for a successful response.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  A human-readable status message, e.g. `"Albums retrieved successfully"`.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data">
+    <ResponseField name="albums" type="array">
+      Array of album objects.
+      <Expandable title="album object">
+        <ResponseField name="id" type="string">
+          UUID of the album.
+        </ResponseField>
+        <ResponseField name="title" type="string">
+          Album title.
+        </ResponseField>
+        <ResponseField name="description" type="string | null">
+          Optional description text.
+        </ResponseField>
+        <ResponseField name="cover_image_path" type="string | null">
+          Path or URL to the album's cover image, if one has been set.
+        </ResponseField>
+        <ResponseField name="images_count" type="integer">
+          Number of published images in the album.
+        </ResponseField>
+        <ResponseField name="user_id" type="string">
+          UUID of the account that owns this album.
+        </ResponseField>
+        <ResponseField name="published" type="boolean">
+          Will always be `true` for albums returned by this endpoint.
+        </ResponseField>
+        <ResponseField name="created_at" type="string">
+          ISO 8601 timestamp of when the album was created.
+        </ResponseField>
+        <ResponseField name="updated_at" type="string">
+          ISO 8601 timestamp of the most recent update.
+        </ResponseField>
+        <ResponseField name="images" type="array">
+          Present only when `with_images=true`. Array of image objects — see image fields below.
+          <Expandable title="image object">
+            <ResponseField name="id" type="string">
+              UUID of the image.
+            </ResponseField>
+            <ResponseField name="title" type="string | null">
+              Image title, used as alt text when present.
+            </ResponseField>
+            <ResponseField name="description" type="string | null">
+              Optional description for the image.
+            </ResponseField>
+            <ResponseField name="path" type="string">
+              URL or storage path of the original image file.
+            </ResponseField>
+            <ResponseField name="webp_path" type="string | null">
+              URL or storage path of the WebP version, if available.
+            </ResponseField>
+            <ResponseField name="thumbnail_url" type="string">
+              URL of the thumbnail. Falls back to `path` if no dedicated thumbnail exists.
+            </ResponseField>
+            <ResponseField name="webp_url" type="string | null">
+              CDN or storage URL of the WebP version, if available.
+            </ResponseField>
+            <ResponseField name="caption" type="string | null">
+              Display caption for the image.
+            </ResponseField>
+            <ResponseField name="order" type="integer">
+              Position of this image within the album (0-based, ascending).
+            </ResponseField>
+            <ResponseField name="published" type="boolean">
+              Will always be `true` for images returned by this endpoint.
+            </ResponseField>
+            <ResponseField name="properties" type="object">
+              Arbitrary extra metadata stored with the image (e.g. `thumbnail_url`, `webp_url`, `location`, `tags`, `author`).
+            </ResponseField>
+            <ResponseField name="created_at" type="string">
+              ISO 8601 creation timestamp.
+            </ResponseField>
+            <ResponseField name="updated_at" type="string">
+              ISO 8601 last-updated timestamp.
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Examples
+
+<CodeGroup>
+
+```javascript JavaScript
+// Without images (metadata only)
+const res = await fetch('https://<your-vams-domain>/api/albums', {
+  headers: { 'X-API-Key': 'your-api-key-here' }
+});
+const data = await res.json();
+console.log(data.data.albums);
+
+// With images included
+const resWithImages = await fetch('https://<your-vams-domain>/api/albums?with_images=true', {
+  headers: { 'X-API-Key': 'your-api-key-here' }
+});
+const dataWithImages = await resWithImages.json();
+```
+
+```bash curl
+# Without images (metadata only)
+curl https://<your-vams-domain>/api/albums \
+  -H "X-API-Key: your-api-key-here"
+
+# With images included
+curl "https://<your-vams-domain>/api/albums?with_images=true" \
+  -H "X-API-Key: your-api-key-here"
+```
+
+</CodeGroup>
+
+**Example response** (`with_images=false`):
+
+```json
+{
+  "success": true,
+  "message": "Albums retrieved successfully",
+  "data": {
+    "albums": [
+      {
+        "id": "018f1a2b-3c4d-7e8f-9a0b-1c2d3e4f5a6b",
+        "title": "Live Music 2024",
+        "description": "Concert photography from the summer tour.",
+        "cover_image_path": "https://cdn.example.com/albums/cover.jpg",
+        "images_count": 42,
+        "user_id": "018e9d8c-7b6a-5f4e-3d2c-1b0a9f8e7d6c",
+        "published": true,
+        "created_at": "2024-06-01T10:00:00.000Z",
+        "updated_at": "2024-08-15T14:30:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## Get Album by ID
+
+Returns a single published album — including all of its published images — identified by its UUID.
+
+```
+GET /api/albums/{id}
+```
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  The UUID of the album to retrieve.
+</ParamField>
+
+### Response Fields
+
+The `data` object contains two keys:
+
+<ResponseField name="data.album" type="object">
+  The album metadata object. Same fields as the album object described in [List All Albums](#list-all-albums).
+</ResponseField>
+
+<ResponseField name="data.images" type="array">
+  Array of published image objects for this album, ordered by `order` ascending. Same image fields as described above.
+</ResponseField>
+
+### Examples
+
+<CodeGroup>
+
+```javascript JavaScript
+const albumId = '018f1a2b-3c4d-7e8f-9a0b-1c2d3e4f5a6b';
+
+const res = await fetch(`https://<your-vams-domain>/api/albums/${albumId}`, {
+  headers: { 'X-API-Key': 'your-api-key-here' }
+});
+const data = await res.json();
+console.log(data.data.album);
+console.log(data.data.images);
+```
+
+```bash curl
+curl https://<your-vams-domain>/api/albums/018f1a2b-3c4d-7e8f-9a0b-1c2d3e4f5a6b \
+  -H "X-API-Key: your-api-key-here"
+```
+
+</CodeGroup>
+
+**Example response:**
+
+```json
+{
+  "success": true,
+  "message": "Album retrieved successfully",
+  "data": {
+    "album": {
+      "id": "018f1a2b-3c4d-7e8f-9a0b-1c2d3e4f5a6b",
+      "title": "Live Music 2024",
+      "description": "Concert photography from the summer tour.",
+      "cover_image_path": "https://cdn.example.com/albums/cover.jpg",
+      "images_count": 2,
+      "user_id": "018e9d8c-7b6a-5f4e-3d2c-1b0a9f8e7d6c",
+      "published": true,
+      "created_at": "2024-06-01T10:00:00.000Z",
+      "updated_at": "2024-08-15T14:30:00.000Z"
+    },
+    "images": [
+      {
+        "id": "019a2b3c-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
+        "title": "Main Stage",
+        "description": null,
+        "path": "https://cdn.example.com/images/main-stage.jpg",
+        "webp_path": "https://cdn.example.com/images/main-stage.webp",
+        "thumbnail_url": "https://cdn.example.com/images/main-stage-thumb.jpg",
+        "webp_url": "https://cdn.example.com/images/main-stage.webp",
+        "caption": "The headliner takes the stage.",
+        "order": 0,
+        "published": true,
+        "properties": {},
+        "created_at": "2024-06-01T10:05:00.000Z",
+        "updated_at": "2024-06-01T10:05:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+If no published album with the given ID exists for your account, the API returns a `404`:
+
+```json
+{
+  "success": false,
+  "message": "Album not found"
+}
+```
+
+---
+
+## Get Album by Title
+
+Returns a single published album looked up by its title. Matching is **case-insensitive** — the API first attempts an exact match and falls back to a case-insensitive comparison if no exact match is found. Multi-word titles should be URL-encoded.
+
+```
+GET /api/albums/by-title/{title}
+```
+
+### Path Parameters
+
+<ParamField path="title" type="string" required>
+  The title of the album. URL-encode spaces and special characters (e.g. `Live%20Music%202024`). Laravel also accepts space characters that the router URL-decodes automatically.
+</ParamField>
+
+### Examples
+
+<CodeGroup>
+
+```javascript JavaScript
+// URL-encode the title when building the path
+const title = encodeURIComponent('Live Music 2024');
+
+const res = await fetch(`https://<your-vams-domain>/api/albums/by-title/${title}`, {
+  headers: { 'X-API-Key': 'your-api-key-here' }
+});
+const data = await res.json();
+console.log(data.data.album);
+```
+
+```bash curl
+curl "https://<your-vams-domain>/api/albums/by-title/Live%20Music%202024" \
+  -H "X-API-Key: your-api-key-here"
+```
+
+</CodeGroup>
+
+<Tip>
+  The by-title endpoint is convenient for hard-coding a specific album slug in your frontend without needing to store UUIDs. Because matching is case-insensitive, `live music 2024`, `Live Music 2024`, and `LIVE MUSIC 2024` all resolve to the same album.
+</Tip>
+
+The response shape is identical to [Get Album by ID](#get-album-by-id) — a `data` object containing `album` and `images`.

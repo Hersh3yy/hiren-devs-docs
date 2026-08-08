@@ -1,0 +1,70 @@
+---
+title: "Core Concepts: Understanding How VAMS Works"
+sidebarTitle: "Concepts"
+description: "A clear explanation of the five building blocks of VAMS — albums, album images, mosaics, entries and entry types, and API keys."
+---
+
+Before you start building with VAMS, it helps to understand the five core concepts that the entire system is built around. Each concept maps to a distinct type of content or credential that you manage through the dashboard and access through the API. Taken together, they give you a flexible, structured foundation for any creative content workflow.
+
+<AccordionGroup>
+  <Accordion title="Albums" icon="folder-open">
+    An album is a named, publishable collection of images with associated metadata. You give each album a title and an optional description, then add images to it in any order you choose. Albums have a publish state — while unpublished, the album exists in your dashboard but is invisible to the API. When you're ready to share, you publish the album and it immediately becomes available to external frontends making authenticated API requests.
+
+    Albums are the primary organizational unit in VAMS. Every image you upload lives inside an album, and every mosaic is built by referencing albums. You can reorder the images within an album at any time, and updates are reflected in API responses immediately.
+
+    **API endpoints:** `GET /api/albums`, `GET /api/albums/{id}`, `GET /api/albums/by-title/{title}`
+  </Accordion>
+
+  <Accordion title="Album Images" icon="image">
+    An album image is an individual media file — typically a photo, but video is also supported — that belongs to a specific album. Each image can carry its own title and alt text, and its position within the album's sequence is stored explicitly so your frontend receives images in the exact order you intend.
+
+    You upload images directly from the album detail view in the dashboard. VAMS stores the file and returns a hosted URL that your frontend can use directly in an `<img>` tag or CSS background. You can reorder images via drag-and-drop, update their metadata, or remove them at any time without affecting the album's publish state.
+  </Accordion>
+
+  <Accordion title="Mosaics" icon="table-cells-large">
+    A mosaic is a named visual grid layout composed of album references arranged as tiles. You build mosaics using a drag-and-drop interface in the dashboard, placing albums into a configurable grid. Because desktop and mobile screens have very different proportions and space constraints, VAMS lets you maintain completely separate layout configurations for each breakpoint — the same mosaic can have a three-column desktop grid and a single-column mobile stack.
+
+    When your frontend fetches a mosaic via the API, it receives both the desktop and mobile layout objects along with the referenced album data, giving you everything you need to render an accurate, responsive visual grid without any additional lookups.
+
+    **API endpoints:** `GET /api/mosaics`, `GET /api/mosaics/{id}`, `GET /api/mosaics/by-title/{title}`
+  </Accordion>
+
+  <Accordion title="Entries & Entry Types" icon="list">
+    Entry Types are flexible content schemas defined by your VAMS administrator. An Entry Type gives a category of content its name and field structure — for example, an administrator might create an "Artist Statement" type with a text field and a date field, or a "Case Study" type with title, body, and link fields. Entry Types let VAMS adapt to whatever structured content your creative practice requires, beyond just images.
+
+    An Entry is a single record that conforms to an Entry Type. Once an Entry Type exists, you create individual entries against it through the dashboard — filling in the fields defined by the schema. Entries are accessible via the API grouped by type, so your frontend can fetch all entries of a given type in one request and render them consistently.
+
+    **API endpoints:** `GET /api/entries`, `GET /api/entries/{id}`, `GET /api/entries/by-type/{type}`
+  </Accordion>
+
+  <Accordion title="API Keys" icon="key">
+    An API key is the credential that authenticates all read requests from external frontends to the VAMS API. Your API key is tied to your account and automatically scopes every API response to your own content — you will never accidentally receive another user's albums or mosaics. Every request to a VAMS API endpoint must include your key in the `X-API-Key` HTTP header.
+
+    API keys are pre-generated for your account and available in your profile settings at any time. The VAMS API is read-only, so even if an API key were exposed, a third party could only read your published content — they cannot create, update, or delete anything. Administrators can regenerate API keys on behalf of any user if a key needs to be rotated.
+
+    ```js Authenticating with your API key
+    fetch('/api/albums', {
+      headers: {
+        'X-API-Key': 'your-api-key'
+      }
+    });
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## How the concepts fit together
+
+The diagram below shows the relationship between VAMS concepts at a glance:
+
+| Concept | Contains / references | Surfaced via API |
+|---|---|---|
+| **Album** | Album Images | ✅ Yes (when published) |
+| **Album Image** | Single media file | ✅ Yes (nested in album) |
+| **Mosaic** | References to Albums | ✅ Yes |
+| **Entry Type** | Field schema definition | — (admin only) |
+| **Entry** | Field values per Entry Type | ✅ Yes |
+| **API Key** | Account-scoped auth credential | Used in every request |
+
+<Tip>
+  Start with Albums — they're the foundation everything else builds on. Once you have published albums, you can reference them in Mosaics or pair them with Entries to create a rich, multi-format content experience for your frontend.
+</Tip>

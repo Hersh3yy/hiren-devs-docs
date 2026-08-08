@@ -1,0 +1,111 @@
+---
+title: "VAMS API Error Reference — HTTP Status Codes"
+sidebarTitle: "Errors"
+description: "Understand every HTTP status code the VAMS API can return and how to parse the error envelope in your client code."
+---
+
+The VAMS API signals errors through standard HTTP status codes and a consistent JSON envelope. When a request fails, the response body always sets `"success": false`, includes a human-readable `message`, and — for validation failures — an `errors` object with per-field detail. Checking the status code first is the most reliable way to branch your error-handling logic.
+
+## Error Response Format
+
+All error responses share the same envelope shape:
+
+```json
+{
+  "success": false,
+  "message": "A description of what went wrong"
+}
+```
+
+Validation errors (HTTP `422`) include an additional `errors` field:
+
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "field_name": ["The field name is required."]
+  }
+}
+```
+
+## HTTP Status Codes
+
+| Status | Name                  | When it occurs |
+|--------|-----------------------|----------------|
+| `200`  | OK                    | The request succeeded. The `data` key in the response body contains the result. |
+| `401`  | Unauthorized          | The `X-API-Key` header is missing or contains an invalid key. |
+| `403`  | Forbidden             | Your API key is valid, but your account does not have permission to access the requested resource — most commonly an entry type that has not been assigned to your account. |
+| `404`  | Not Found             | The requested resource does not exist, or it exists but has not been published. |
+| `422`  | Unprocessable Entity  | The request was understood but failed validation. Inspect the `errors` object for per-field messages. |
+| `429`  | Too Many Requests     | You have exceeded 60 requests per minute. Wait for the current rate-limit window to expire before retrying. |
+
+## Status Code Details
+
+### 401 Unauthorized
+
+Returned when no API key is provided, or when the provided key does not match any active account.
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized"
+}
+```
+
+Verify that your `X-API-Key` header is present and that the key value matches exactly what is shown on your Profile page.
+
+### 403 Forbidden
+
+Returned when your account is authenticated but lacks permission to access a specific resource. This is most commonly seen with [Entries](/api/entries) when the requested entry type has not been assigned to your account.
+
+```json
+{
+  "success": false,
+  "message": "You do not have permission to access this entry type"
+}
+```
+
+<Note>
+  Contact the VAMS administrator to have the required entry type assigned to your account.
+</Note>
+
+### 404 Not Found
+
+Returned when the resource with the given ID or title does not exist, or when it exists but is not published. Unpublished albums and entries are invisible to the API.
+
+```json
+{
+  "success": false,
+  "message": "Album not found"
+}
+```
+
+### 422 Unprocessable Entity
+
+Returned when request parameters fail server-side validation. The `errors` object maps field names to arrays of validation messages.
+
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "title": ["The title field is required."]
+  }
+}
+```
+
+### 429 Too Many Requests
+
+Returned when your API key has sent more than 60 requests within the current one-minute window.
+
+```json
+{
+  "success": false,
+  "message": "Too Many Requests"
+}
+```
+
+<Warning>
+  Implement exponential back-off in your client when you receive a `429`. Retrying immediately will continue to fail until the rate-limit window resets.
+</Warning>

@@ -1,0 +1,249 @@
+---
+title: "Embedding VAMS Content in External Sites and Apps"
+sidebarTitle: "Embedding"
+description: "Use VAMS as a headless content backend to render albums, mosaics, and entries on any external website or app with live API-driven data."
+---
+
+VAMS is built to be headless — you manage your content in the VAMS admin, and the API delivers it wherever you need it. Whether you're building a portfolio site in Next.js, a Vue app, or plain HTML with a fetch call, the read-only API gives you everything you need to render albums, mosaic grids, and text entries without duplicating your content across systems.
+
+<Note>
+  The VAMS API only returns **published** content. Drafts and unpublished items are never included in API responses, so you can safely stage work in VAMS without worrying about it appearing on your live site.
+</Note>
+
+## Prerequisites
+
+Before you start, make sure you have:
+
+- Your VAMS API key (see [API Keys](/guides/api-key))
+- The base URL of your VAMS instance (e.g., `https://vams.yourdomain.com`)
+- A frontend project that can make HTTP requests
+
+## Fetching and rendering albums
+
+Albums are the most common embed use-case. The `/api/albums` endpoint returns all your published albums. Add the `with_images=true` query parameter to include each album's full image list in a single request — this saves you a second round-trip when you need to render a gallery immediately.
+
+```javascript
+// Fetch all albums with their images included
+const res = await fetch('/api/albums?with_images=true', {
+  headers: { 'X-API-Key': 'your-api-key' }
+});
+const { data: { albums } } = await res.json();
+```
+
+The response shape when `with_images=true` is set:
+
+```json
+{
+  "success": true,
+  "message": "Albums retrieved successfully",
+  "data": {
+    "albums": [
+      {
+        "id": "uuid",
+        "title": "Summer Series",
+        "description": "Outdoor portraits from July.",
+        "cover_image_path": "https://assets.example.com/covers/summer.jpg",
+        "images_count": 12,
+        "published": true,
+        "created_at": "2024-06-01T10:00:00.000000Z",
+        "updated_at": "2024-07-15T08:30:00.000000Z",
+        "images": [
+          {
+            "id": "uuid",
+            "title": "Golden Hour #1",
+            "path": "https://assets.example.com/images/gh1.jpg",
+            "webp_path": "https://assets.example.com/images/gh1.webp",
+            "thumbnail_url": "https://assets.example.com/images/gh1-thumb.jpg",
+            "caption": "Riverside at dusk.",
+            "order": 1,
+            "published": true
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Here is a minimal example that renders album cards in JavaScript:
+
+```javascript
+async function renderAlbums(containerEl) {
+  const res = await fetch('/api/albums?with_images=true', {
+    headers: { 'X-API-Key': process.env.VAMS_API_KEY }
+  });
+
+  if (!res.ok) throw new Error(`Failed to load albums: ${res.status}`);
+
+  const { data: { albums } } = await res.json();
+
+  albums.forEach(album => {
+    const card = document.createElement('div');
+    card.innerHTML = `
+      <img src="${album.cover_image_path}" alt="${album.title}" />
+      <h2>${album.title}</h2>
+      <p>${album.description ?? ''}</p>
+      <span>${album.images_count} photos</span>
+    `;
+    containerEl.appendChild(card);
+  });
+}
+```
+
+### Fetching a single album
+
+When a visitor clicks into an album you can load it by ID or by title. Use the `by-title` endpoint to keep your URLs human-readable without storing internal UUIDs in your routing layer:
+
+<Tip>
+  The `by-title` endpoints (`/api/albums/by-title/{title}` and `/api/mosaics/by-title/{title}`) support case-insensitive matching and handle URL-encoded spaces automatically. Use them to build clean, readable URLs like `/portfolio/summer-series` that map directly to your VAMS titles.
+</Tip>
+
+```typescript
+// Fetch a single album by its title (TypeScript)
+async function getAlbumByTitle(title: string) {
+  const encoded = encodeURIComponent(title);
+  const res = await fetch(`/api/albums/by-title/${encoded}`, {
+    headers: { 'X-API-Key': process.env.VAMS_API_KEY! }
+  });
+
+  if (!res.ok) throw new Error(`Album not found: ${res.status}`);
+
+  const { data } = await res.json();
+  // data.album  → album metadata
+  // data.images → ordered array of published images
+  return data;
+}
+```
+
+## Rendering a mosaic grid
+
+Mosaics are pre-configured grid layouts composed of items. Each item carries a `type`, `content`, `column_index`, and `order` that you use to reconstruct the layout on your frontend. Fetch a mosaic by its ID or title to get the full structure with all items included:
+
+```javascript
+// Fetch a mosaic with all its items
+async function getMosaic(titleOrId) {
+  const res = await fetch(`/api/mosaics/by-title/${encodeURIComponent(titleOrId)}`, {
+    headers: { 'X-API-Key': process.env.VAMS_API_KEY }
+  });
+
+  const { data } = await res.json();
+  // data.mosaic → { id, title, description, columns, ... }
+  // data.items  → array of mosaic items
+  return data;
+}
+
+function renderMosaicGrid(mosaic, items) {
+  const grid = document.createElement('div');
+  grid.style.setProperty('--columns', mosaic.columns);
+
+  // Group items by column_index, then sort by order within each column
+  const columns = Array.from({ length: mosaic.columns }, (_, i) =>
+    items
+      .filter(item => item.column_index === i)
+      .sort((a, b) => a.order - b.order)
+  );
+
+  columns.forEach(columnItems => {
+    const col = document.createElement('div');
+    columnItems.forEach(item => {
+      const el = document.createElement('div');
+      el.dataset.type = item.type;
+      el.dataset.content = JSON.stringify(item.content);
+      col.appendChild(el);
+    });
+    grid.appendChild(col);
+  });
+
+  return grid;
+}
+```
+
+A mosaic item from the API looks like this:
+
+```json
+{
+  "id": "uuid",
+  "type": "image",
+  "content": {
+    "image_url": "https://assets.example.com/images/hero.jpg",
+    "title": "Welcome",
+    "link": "/collections/latest"
+  },
+  "properties": {},
+  "column_index": 0,
+  "order": 1
+}
+```
+
+## Fetching entries by type
+
+Entries let you expose structured text content — artist statements, written pieces, custom content types — alongside your visual work. Use the `by-type` endpoint with a type slug to retrieve all entries of a specific kind:
+
+```javascript
+// Fetch all entries of type "statements"
+const res = await fetch('/api/entries/by-type/statements', {
+  headers: { 'X-API-Key': process.env.VAMS_API_KEY }
+});
+
+const { data } = await res.json();
+// data.entries    → array of entry objects
+// data.entry_type → metadata about the "statements" type
+
+data.entries.forEach(entry => {
+  console.log(entry.id, entry.order);
+  // entry.images is also available for entries with attached media
+});
+```
+
+You can also list all entries across every type your account has access to:
+
+```javascript
+// Fetch all entries (all permitted types)
+const res = await fetch('/api/entries', {
+  headers: { 'X-API-Key': process.env.VAMS_API_KEY }
+});
+
+const { data } = await res.json();
+// data.entries     → all entries, sorted by order
+// data.entry_types → list of entry type metadata
+```
+
+## Caching recommendations
+
+Calling the VAMS API on every page render adds unnecessary latency and can push you toward the 60 requests-per-minute rate limit under traffic spikes. A lightweight caching strategy avoids both problems.
+
+**ETag / If-None-Match pattern.** VAMS responses include an `ETag` header. On subsequent requests, send back the stored ETag value in an `If-None-Match` header. If the content hasn't changed, the server returns `304 Not Modified` with no body, and you serve your cached copy:
+
+```javascript
+async function getCachedAlbums() {
+  const storedEtag = localStorage.getItem('albums-etag');
+  const cachedData = localStorage.getItem('albums-cache');
+
+  const headers = { 'X-API-Key': process.env.VAMS_API_KEY };
+  if (storedEtag) headers['If-None-Match'] = storedEtag;
+
+  const res = await fetch('/api/albums?with_images=true', { headers });
+
+  // Content unchanged — return cached version
+  if (res.status === 304 && cachedData) {
+    return JSON.parse(cachedData);
+  }
+
+  const data = await res.json();
+
+  // Store the new ETag and response body for next time
+  const newEtag = res.headers.get('ETag');
+  if (newEtag) localStorage.setItem('albums-etag', newEtag);
+  localStorage.setItem('albums-cache', JSON.stringify(data));
+
+  return data;
+}
+```
+
+**Server-side caching.** For server-rendered frameworks (Next.js, Nuxt, SvelteKit), cache VAMS responses in-memory or via a CDN edge layer with a short TTL (60–300 seconds). This means only your server calls VAMS — your end users hit your cache.
+
+**Static generation.** If your content changes infrequently, fetch from the VAMS API at build time and bake the data into static pages. Trigger a rebuild whenever you publish new content in VAMS.
+
+<Tip>
+  Use `by-title` endpoints during static generation to create stable, slug-based routes. If you rename a piece of content in VAMS, update the slug in your build config — the title-based lookup means no UUID juggling in your codebase.
+</Tip>

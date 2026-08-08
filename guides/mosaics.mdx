@@ -1,0 +1,98 @@
+---
+title: "Build Visual Mosaic Layouts with VAMS"
+sidebarTitle: "Mosaics"
+description: "Create flexible multi-column grid layouts that combine album references, images, and other content tiles into a single curated visual experience."
+---
+
+A Mosaic is a flexible visual grid layout that lets you compose a curated page from multiple content tiles — albums, standalone images, color blocks, and more. Where an album holds a collection of images in sequence, a Mosaic lets you arrange content spatially across columns, controlling exactly how your portfolio or project page looks to a visitor. Mosaics are fully managed through the VAMS API, so any front-end — your website, app, or exhibition display — can consume and render them however you like.
+
+## What Is a Mosaic?
+
+A Mosaic is made up of **items** placed into a column-based grid. Each item sits in a specific column and has an order within that column. When your front-end reads a Mosaic from the API, it receives the full grid structure so it can render each column and its items in the correct arrangement.
+
+Items in a Mosaic can reference:
+
+- **An album** — Renders a reference to one of your albums, including its cover image, title, and image count.
+- **A media tile** — A standalone image or video uploaded directly to the Mosaic.
+- **A color tile** — A solid color block, useful for spacing or visual accent.
+- **A text tile** — A short text block within the grid.
+
+<Note>
+  Mosaics support **separate layouts for desktop and mobile**. Each layout is independent, so you can arrange your grid one way for large screens and a completely different way for smaller devices — without affecting the other layout.
+</Note>
+
+## Creating a Mosaic
+
+<Steps>
+  <Step title="Open the Mosaics section">
+    From your dashboard, click **Mosaics** in the sidebar. You'll see all your existing mosaics listed here. Click **Create New Mosaic** in the top-right corner.
+  </Step>
+
+  <Step title="Name your mosaic">
+    Enter a **Title** for the mosaic. Like albums, mosaic titles can be used for API lookups, so choose something descriptive and unique — for example, `"Portfolio Home"` or `"Spring Collection 2024"`.
+
+    Optionally add a **Description** to give the mosaic context. When you're ready, save to create it.
+  </Step>
+
+  <Step title="Open the mosaic editor">
+    After creating the mosaic, you're taken to the mosaic detail view. This is your editing canvas. You'll see the column grid laid out, and you can start adding items to it.
+  </Step>
+
+  <Step title="Add items to the grid">
+    Click the **Add Item** button (or click the **+** zone within any column) to open the item editor. Choose the item type — album reference, media upload, color, or text — configure its content, and save it to place it in the grid.
+
+    When adding an **album reference**, you can select any album from your library. The Mosaic will display that album's cover image, title, and image count as a tile.
+  </Step>
+
+  <Step title="Reorder items by dragging">
+    Within each column, drag and drop items to rearrange their vertical order. You can also move items between columns by editing an item and changing its column assignment in the item editor.
+  </Step>
+
+  <Step title="Save the mosaic layout">
+    Changes to item order and placement are saved when you drag items or save individual items. Use the **Edit Mosaic** button in the header to update the mosaic's title, description, or column count at any time.
+  </Step>
+</Steps>
+
+## Managing Mosaic Items
+
+Each tile in the grid is an independent item you can edit, move, or delete at any time.
+
+### Editing an Item
+
+Click any tile in the grid to open its editor. You can update its type, content, and position (column assignment). Click **Save** to apply your changes.
+
+### Deleting an Item
+
+Open the item editor by clicking the tile, then click **Delete** at the bottom of the editor panel. You'll be asked to confirm before the item is removed from the grid.
+
+<Accordion title="Item types in detail">
+  **Album reference**
+  Links to one of your existing albums. The tile displays the album's cover image, title, and the number of images in the album. If the referenced album is unpublished, it will not appear in API responses.
+
+  **Media tile**
+  A standalone image or video uploaded directly to the Mosaic — no album required. Useful for one-off visuals that don't belong in a dedicated album. Supported formats include JPEG, PNG, GIF, WebP, and common video formats (MP4, MOV, AVI). Images are automatically converted to WebP for better performance.
+
+  **Color tile**
+  A solid-color block placed in the grid. Useful for visual pacing, accent sections, or breaking up image-heavy layouts.
+
+  **Text tile**
+  A short text block placed in the grid. Useful for labels, captions, or brief statements directly embedded in the layout.
+</Accordion>
+
+## Desktop and Mobile Layouts
+
+Mosaics maintain two independent layout grids: one for **desktop** and one for **mobile**. This means you can configure a four-column grid for large screens while presenting a single-column arrangement on phones — each layout is stored and served separately.
+
+<Note>
+  Changes you make to the desktop layout do **not** automatically apply to the mobile layout, and vice versa. Make sure to configure both layouts if you need responsive control over how your Mosaic renders.
+</Note>
+
+When your front-end requests a Mosaic from the API, the response includes both layout grids, and your front-end code chooses which to render based on the device or viewport size.
+
+## Deleting a Mosaic
+
+To delete a Mosaic, open it from the Mosaics list and click **Delete Mosaic** in the header area. A confirmation dialog will appear — confirm to permanently remove the Mosaic and all of its items.
+
+<Warning>
+  Deleting a Mosaic permanently removes it and all of its items. The albums and images referenced by the Mosaic are **not** deleted — only the Mosaic layout itself is removed.
+</Warning>

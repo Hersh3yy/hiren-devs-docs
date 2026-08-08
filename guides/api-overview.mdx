@@ -1,0 +1,129 @@
+---
+title: "VAMS API Overview: Read-Only REST API for Creatives"
+sidebarTitle: "API Overview"
+description: "Learn how the VAMS read-only REST API works, how it authenticates requests, and which endpoint groups are available for embedding your content."
+---
+
+The VAMS API gives you a direct, read-only window into your content so you can power external websites, portfolio pages, and custom frontends without rebuilding your CMS. Every request is authenticated with your personal API key, all responses are JSON, and only your published content is ever exposed — making it safe, predictable, and ready to embed anywhere.
+
+## How it works
+
+VAMS separates its internal admin interface from its public-facing data layer. The admin interface handles creating, editing, and deleting content. The API handles reading and delivering that content to the outside world. This split means external integrations can never accidentally modify your work.
+
+| Concern | Detail |
+|---|---|
+| **Base path** | `/api/` |
+| **Methods** | `GET` only (read-only) |
+| **Authentication** | `X-API-Key` request header |
+| **Response format** | JSON |
+| **Rate limit** | 60 requests per minute |
+| **Content visibility** | Published content only |
+
+<Note>
+  Your API key determines which content is returned. Every response is automatically scoped to your account — you will never receive another user's albums, mosaics, or entries.
+</Note>
+
+## Authentication
+
+Include your API key in the `X-API-Key` header on every request. Requests that omit the header, or that supply an invalid key, receive a `401 Unauthorized` response.
+
+```http
+GET /api/albums HTTP/1.1
+X-API-Key: your-api-key-here
+```
+
+See the [API Keys guide](/guides/api-key) for step-by-step instructions on finding and using your key.
+
+## Rate limiting
+
+All API endpoints are rate-limited to **60 requests per minute**. If you exceed that threshold you will receive a `429 Too Many Requests` response. Design your integration to cache responses locally rather than re-fetching on every page render — your users will also benefit from faster load times.
+
+## Available endpoint groups
+
+<CardGroup cols={2}>
+  <Card title="Albums" icon="images" href="/api/albums">
+    Retrieve image collections with optional inline image data. Supports lookup by ID or human-readable title.
+  </Card>
+  <Card title="Mosaics" icon="grid-2" href="/api/mosaics">
+    Fetch grid layout structures and their items for rendering fully customized mosaic views.
+  </Card>
+  <Card title="Entries" icon="list" href="/api/entries">
+    Access typed content entries such as statements, recipes, or any custom type assigned to your account.
+  </Card>
+  <Card title="Test connection" icon="plug" href="/api/albums">
+    Use `GET /api/test` to verify your API key is working before building your integration.
+  </Card>
+</CardGroup>
+
+### Albums — `/api/albums`
+
+Albums are collections of images grouped under a title. The albums endpoints let you list all your published albums, fetch a single album by its ID, or look one up by its human-readable title.
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/albums` | List all published albums |
+| `GET /api/albums?with_images=true` | List albums with inline image data |
+| `GET /api/albums/{id}` | Fetch a single album by ID |
+| `GET /api/albums/by-title/{title}` | Fetch a single album by title |
+
+### Mosaics — `/api/mosaics`
+
+Mosaics are flexible grid layouts built from items (images, albums, or other content blocks). Fetch the full mosaic structure, including all items and their column positions, to reconstruct any layout on your frontend.
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/mosaics` | List all mosaics |
+| `GET /api/mosaics/{id}` | Fetch a mosaic with its items |
+| `GET /api/mosaics/by-title/{title}` | Fetch a mosaic by title |
+
+### Entries — `/api/entries`
+
+Entries are typed content records — think artist statements, written pieces, recipes, or any structured text content. You can fetch all entries your account has access to, or filter them by a specific type slug.
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/entries` | List all entries across all permitted types |
+| `GET /api/entries/by-type/{type}` | List entries for a specific type slug |
+| `GET /api/entries/{id}` | Fetch a single entry by ID |
+
+## Quick example
+
+The following snippet fetches all your published albums and logs the result. Replace `your-api-key-here` with your actual key and update the base URL to match your VAMS instance.
+
+```javascript
+const response = await fetch('/api/albums', {
+  headers: {
+    'X-API-Key': 'your-api-key-here'
+  }
+});
+
+const { data } = await response.json();
+console.log(data.albums);
+```
+
+A successful response has the shape:
+
+```json
+{
+  "success": true,
+  "message": "Albums retrieved successfully",
+  "data": {
+    "albums": [
+      {
+        "id": "uuid",
+        "title": "Summer Series",
+        "description": "Outdoor portraits from July.",
+        "cover_image_path": "https://assets.example.com/cover.jpg",
+        "images_count": 24,
+        "published": true,
+        "created_at": "2024-06-01T10:00:00.000000Z",
+        "updated_at": "2024-07-15T08:30:00.000000Z"
+      }
+    ]
+  }
+}
+```
+
+<Tip>
+  Test your API key before writing integration code by calling `GET /api/test`. A successful response confirms authentication is working and returns your account name and a server timestamp.
+</Tip>

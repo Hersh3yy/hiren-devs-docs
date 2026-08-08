@@ -1,0 +1,77 @@
+---
+title: "VAMS API Overview — Visual Asset Management System"
+sidebarTitle: "Overview"
+description: "A read-only, API-key authenticated REST API for delivering your albums, mosaics, and entries to any external frontend."
+---
+
+The VAMS API gives your external websites and applications direct, read-only access to the visual content you manage in VAMS. Every request is scoped to the account that owns the API key, so you only ever see your own data. The API follows a simple JSON envelope convention and requires no OAuth flow — just include your key in a single header and start fetching content.
+
+## Base URL
+
+All API endpoints are served under the `/api` path of your VAMS instance:
+
+```
+https://<your-vams-domain>/api
+```
+
+Replace `<your-vams-domain>` with the domain where your VAMS installation is hosted (e.g. `cms.myportfolio.com`).
+
+## Response Envelope
+
+Every response — success or error — is wrapped in a consistent JSON envelope. Successful responses always contain `"success": true`, an optional human-readable `message`, and a `data` object holding the actual payload.
+
+```json
+{
+  "success": true,
+  "message": "Albums retrieved successfully",
+  "data": {
+    "albums": [ ... ]
+  }
+}
+```
+
+Error responses set `"success": false` and include a `message` describing what went wrong. Validation errors also include an `errors` object with per-field details:
+
+```json
+{
+  "success": false,
+  "message": "Resource not found"
+}
+```
+
+## Rate Limiting
+
+The API enforces a limit of **60 requests per minute** per API key. If you exceed this limit the server returns an HTTP `429 Too Many Requests` response. Your client should back off and retry after the window resets.
+
+<Note>
+  Rate limit windows are **one minute** in duration. After receiving a `429`, wait at least 60 seconds before retrying.
+</Note>
+
+## All Endpoints
+
+The table below lists every available endpoint. All routes require the `X-API-Key` header.
+
+| Method | Path                              | Description                                 |
+|--------|-----------------------------------|---------------------------------------------|
+| `GET`  | `/api/test`                       | Verify your API key is valid                |
+| `GET`  | `/api/albums`                     | List all published albums                   |
+| `GET`  | `/api/albums/{id}`                | Get a single album by UUID                  |
+| `GET`  | `/api/albums/by-title/{title}`    | Get a single album by title                 |
+| `GET`  | `/api/mosaics`                    | List all mosaics                            |
+| `GET`  | `/api/mosaics/{id}`               | Get a single mosaic with items by UUID      |
+| `GET`  | `/api/mosaics/by-title/{title}`   | Get a single mosaic by title                |
+| `GET`  | `/api/entries`                    | List all entries across permitted types     |
+| `GET`  | `/api/entries/by-type/{type}`     | List entries of a specific type             |
+| `GET`  | `/api/entries/{id}`               | Get a single entry by UUID                  |
+
+<CardGroup cols={3}>
+  <Card title="Albums" icon="images" href="/api/albums">
+    Retrieve published photo collections with optional image payloads.
+  </Card>
+  <Card title="Mosaics" icon="table-cells" href="/api/mosaics">
+    Fetch grid layouts and their positioned content items.
+  </Card>
+  <Card title="Entries" icon="file-lines" href="/api/entries">
+    Access structured content like statements, recipes, and custom types.
+  </Card>
+</CardGroup>
